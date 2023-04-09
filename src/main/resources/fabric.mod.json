@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "examplemod",
+  "version": "${version}",
+  "name": "ExampleMod",
+  "description": "Template for Cobblemon addon development",
+  "authors": [
+    "Reyn"
+  ],
+  "contact": {
+    "repo": "https://github.com/DotReyn/Cobblemon-Template"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.example.examplemod.ExampleMod"
+    ]
+  },
+  "mixins": [
+    "examplemod.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric": "*",
+    "minecraft": "1.19.2",
+    "cobblemon": ">=1.2.0+1.19.2"
+  }
+}
