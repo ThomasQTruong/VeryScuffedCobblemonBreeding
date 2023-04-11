@@ -109,6 +109,7 @@ public class PokeBreed {
           return;
         }
       }
+      // Possibly Nidoking/Nidoqueen
 
       // Proceeding to breed.
       cancelled = true;
