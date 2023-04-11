@@ -1,20 +1,29 @@
-rootProject.name = "CobblemonTemplate"
+rootProject.name = "veryscuffedcobblemonbreeding"
+
 pluginManagement {
     repositories {
-        maven("https://maven.fabricmc.net/") {
-            name = "Fabric"
-        }
-        mavenCentral()
+        maven("https://maven.fabricmc.net/")
+        maven("https://maven.architectury.dev/")
+        maven("https://maven.minecraftforge.net/")
         gradlePluginPortal()
     }
+    includeBuild("build-logic")
+}
+plugins {
+    id("ca.stellardrift.polyglot-version-catalogs") version "5.0.1"
+}
 
-    val loom_version: String by settings
-    val fabric_kotlin_version: String by settings
-    plugins {
-        id("fabric-loom") version loom_version
-        id("org.jetbrains.kotlin.jvm") version
-                fabric_kotlin_version
-                    .split("+kotlin.")[1] // Grabs the sentence after `+kotlin.`
-                    .split("+")[0] // Ensures sentences like `+build.1` are ignored
-    }
+listOf(
+    "common",
+    "fabric",
+    "forge"
+).forEach { setupProject(it, file(it)) }
+
+fun setupProject(name: String, projectDirectory: File) = setupProject(name) {
+    projectDir = projectDirectory
+}
+
+inline fun setupProject(name: String, block: ProjectDescriptor.() -> Unit) {
+    include(name)
+    project(":$name").apply(block)
 }
