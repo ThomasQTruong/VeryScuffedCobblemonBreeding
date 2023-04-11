@@ -22,6 +22,8 @@ public class PokemonUtility {
             statsHoverText.append(Text.literal(" ★").formatted(Formatting.GOLD));
         }
         statsHoverText.append(Text.literal("\n"));
+        statsHoverText.append(Text.literal("Gender: ").formatted(Formatting.GREEN).append(Text.literal(String.valueOf(pokemon.getGender())).formatted(Formatting.WHITE)));
+        statsHoverText.append(Text.literal("\n"));
         statsHoverText.append(Text.literal("Level: ").formatted(Formatting.AQUA).append(Text.literal(String.valueOf(pokemon.getLevel())).formatted(Formatting.WHITE)));
         statsHoverText.append(Text.literal("\n"));
         statsHoverText.append(Text.literal("Nature: ").formatted(Formatting.YELLOW).append(LocalizationUtilsKt.lang(pokemon.getNature().getDisplayName().replace("cobblemon.", "")).formatted(Formatting.WHITE)));
@@ -120,6 +122,7 @@ public class PokemonUtility {
                 .hideAdditional()
                 .addLore(new Text[]{
                         pokemon.getCaughtBall().item().getName().copy().setStyle(Style.EMPTY.withItalic(true).withColor(Formatting.DARK_GRAY)),
+                        Text.literal("Gender: ").formatted(Formatting.GREEN).append(Text.literal(String.valueOf(pokemon.getGender())).formatted(Formatting.WHITE)),
                         Text.literal("Level: ").formatted(Formatting.AQUA).append(Text.literal(String.valueOf(pokemon.getLevel())).formatted(Formatting.WHITE)),
                         Text.literal("Nature: ").formatted(Formatting.YELLOW).append(LocalizationUtilsKt.lang(pokemon.getNature().getDisplayName().replace("cobblemon.", "")).formatted(Formatting.WHITE)),
                         Text.literal("Ability: ").formatted(Formatting.GOLD).append(LocalizationUtilsKt.lang(pokemon.getAbility().getDisplayName().replace("cobblemon.", "")).formatted(Formatting.WHITE)),

@@ -217,7 +217,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         // GUI closed AND it wasn't to change page (player closed).
         if (!breedSession.cancelled && !breedSession.changePage) {
           // Cancel session.
-          breedSession.cancel();
+          breedSession.cancel("GUI closed.");
           breedSession.breeder.closeHandledScreen();
         }
       }

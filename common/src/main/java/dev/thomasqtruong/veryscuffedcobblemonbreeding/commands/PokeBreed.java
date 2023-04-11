@@ -55,8 +55,8 @@ public class PokeBreed {
       this.timestamp = System.currentTimeMillis();
     }
 
-    public void cancel() {
-      breeder.sendMessage(Text.literal("Breed cancelled.").formatted(Formatting.RED));
+    public void cancel(String msg) {
+      breeder.sendMessage(Text.literal("Breed cancelled: " + msg).formatted(Formatting.RED));
       breedSessions.remove(breederUUID);
       this.cancelled = true;
     }
@@ -71,9 +71,45 @@ public class PokeBreed {
       // Breed cancelled, why are we still doing the breed?
       if (this.cancelled) {
         System.out.println("Something funky is goin' on");
-        cancel();
+        cancel("Something funky is goin' on.");
         return;
       }
+      // Only provided 1 or 0 Pokemon to breed or pokemons don't exist.
+      if (breederPokemon1 == null || breederPokemon2 == null) {
+        cancel("Not enough Cobblemons provided.");
+        return;
+      }
+      
+      // Get Pokemon attributes.
+      String pokemon1Gender = String.valueOf(breederPokemon1.getGender());
+      String pokemon2Gender = String.valueOf(breederPokemon2.getGender());
+      String pokemon1Species = String.valueOf(breederPokemon1.getSpecies());
+      String pokemon2Species = String.valueOf(breederPokemon2.getSpecies());
+
+      // Cannot breed same genders (unless genderless + ditto).
+      if (pokemon1Gender.equals(pokemon2Gender) && !pokemon1Gender.equals(String.valueOf("GENDERLESS"))) {
+        cancel("Cannot breed same genders.");
+        return;
+      }
+      // Both dittos.
+      if (pokemon1Species.equals("ditto") && pokemon2Species.equals("ditto")) {
+        cancel("Cannot breed dittos.");
+        return;
+      }
+      // None are ditto.
+      if (!(pokemon1Species.equals("ditto") || pokemon2Species.equals("ditto"))) {
+        if (pokemon1Gender.equals(String.valueOf("GENDERLESS")) && pokemon2Gender.equals(String.valueOf("GENDERLESS")
+            && !pokemon1Species.equals(pokemon2Species))) {
+          // Both are genderless and not the same species.
+          cancel("Cannot breed two differing genderless species (unless theres a ditto).");
+          return;
+        } else if (pokemon1Gender.equals(String.valueOf("GENDERLESS")) || pokemon2Gender.equals(String.valueOf("GENDERLESS"))) {
+          // One is genderless.
+          cancel("Cannot breed a genderless non-ditto species with a regular Cobblemon.");
+          return;
+        }
+      }
+
       // Proceeding to breed.
       cancelled = true;
 
@@ -84,6 +120,7 @@ public class PokeBreed {
       }
 
       // Pokemon exists.
+      /*
       if (breederPokemon1 != null) {
         // Give pokemon and evolve is neccessary.
         // party2.add(breederPokemon1);
@@ -92,7 +129,7 @@ public class PokeBreed {
             evolution.evolve(breederPokemon1);
           }
         });
-      }
+      }*/
 
       Text toSend = Text.literal("Breed complete!").formatted(Formatting.GREEN);
       breeder.sendMessage(toSend);
