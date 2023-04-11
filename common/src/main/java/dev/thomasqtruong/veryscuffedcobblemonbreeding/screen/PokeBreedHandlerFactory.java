@@ -77,8 +77,14 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     }
     // Breeding choices.
     inventory.setStack(6, new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE).setCustomName(Text.of("To Breed #1")));
+    if (breedSession.breederPokemon1 != null) {
+      inventory.setStack(6, PokemonUtility.pokemonToItem(breedSession.breederPokemon1));
+    }
     inventory.setStack(7, new ItemStack(Items.PINK_STAINED_GLASS_PANE).setCustomName(Text.of(" ")));
     inventory.setStack(8, new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE).setCustomName(Text.of("To Breed #2")));
+    if (breedSession.breederPokemon2 != null) {
+      inventory.setStack(8, PokemonUtility.pokemonToItem(breedSession.breederPokemon2));
+    }
     // Buttons
     inventory.setStack(size() - 1, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(Text.literal("Next Box")).build());
     inventory.setStack(size() - 2, new ItemStack(Items.GRAY_DYE).setCustomName(Text.literal("Click to Breed")));
@@ -135,7 +141,11 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
         // Clicked next page.
         if (slotIndex == size() - 1) {
+          // Indicate that the old GUI closing is a page change, not cancel.
+          breedSession.changePage = true;
           player.openHandledScreen(new PokeBreedHandlerFactory(breedSession, boxNumber + 1));
+          // Back to default value.
+          breedSession.changePage = false;
         }
         // Clicked accept.
         if (slotIndex == size() - 2) {
@@ -143,7 +153,11 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         }
         // Clicked previous page.
         if (slotIndex == size() - 3) {
+          // Indicate that the old GUI closing is a page change, not cancel.
+          breedSession.changePage = true;
           player.openHandledScreen(new PokeBreedHandlerFactory(breedSession, boxNumber - 1));
+          // Back to default value.
+          breedSession.changePage = false;
         }
 
         // Ignore when clicking a slot outside of the GUI.
@@ -167,7 +181,10 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
               ItemStack pokemonItem = PokemonUtility.pokemonToItem(pokemon);
               setStackInSlot(6, nextRevision(), pokemonItem);
             } else {
-              // First Pokemon already selected, select on second slot.
+              // First Pokemon already selected, select on second slot if not dupelicate.
+              if (breedSession.breederPokemon1 == pokemon) {
+                return;
+              }
               breedSession.breederPokemon2 = pokemon;
               ItemStack pokemonItem = PokemonUtility.pokemonToItem(pokemon);
               setStackInSlot(8, nextRevision(), pokemonItem);
@@ -197,11 +214,12 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
       @Override
       public void close(PlayerEntity player) {
-        if (!breedSession.cancelled) {
+        // GUI closed AND it wasn't to change page (player closed).
+        if (!breedSession.cancelled && !breedSession.changePage) {
+          // Cancel session.
           breedSession.cancel();
           breedSession.breeder.closeHandledScreen();
         }
-        System.out.println("Test");
       }
     };
 

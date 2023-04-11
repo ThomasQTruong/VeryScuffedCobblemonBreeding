@@ -46,6 +46,7 @@ public class PokeBreed {
     public Pokemon breederPokemon2;
     long timestamp;
     public boolean cancelled = false;
+    public boolean changePage = false;
 
     // Constructor
     public BreedSession(ServerPlayerEntity breeder) {
