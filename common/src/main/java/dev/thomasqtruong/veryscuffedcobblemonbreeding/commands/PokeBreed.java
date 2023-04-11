@@ -98,8 +98,8 @@ public class PokeBreed {
       }
       // None are ditto.
       if (!(pokemon1Species.equals("ditto") || pokemon2Species.equals("ditto"))) {
-        if (pokemon1Gender.equals(String.valueOf("GENDERLESS")) && pokemon2Gender.equals(String.valueOf("GENDERLESS")
-            && !pokemon1Species.equals(pokemon2Species))) {
+        if (pokemon1Gender.equals(String.valueOf("GENDERLESS")) && pokemon2Gender.equals(String.valueOf("GENDERLESS"))
+            && !pokemon1Species.equals(pokemon2Species)) {
           // Both are genderless and not the same species.
           cancel("Cannot breed two differing genderless species (unless theres a ditto).");
           return;
