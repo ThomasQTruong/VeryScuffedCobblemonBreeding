@@ -18,6 +18,7 @@ public class VeryScuffedCobblemonBreedingConfig {
             .setPrettyPrinting()
             .create();
     public static int COMMAND_POKEBREED_PERMISSION_LEVEL = 2;
+    public static int COOLDOWN_IN_MINUTES = 5;  // Default: 5 minutes cooldown.
 
     public VeryScuffedCobblemonBreedingConfig() {
         init();
@@ -41,6 +42,7 @@ public class VeryScuffedCobblemonBreedingConfig {
             HashMap<String, Integer> permissionMap = GSON.fromJson(permLevels, type);
 
             COMMAND_POKEBREED_PERMISSION_LEVEL = permissionMap.getOrDefault("command.pokebreed", 2);
+            COOLDOWN_IN_MINUTES = permissionMap.getOrDefault("command.pokebreed.cooldown", 5);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -57,6 +59,10 @@ public class VeryScuffedCobblemonBreedingConfig {
                     .beginObject()
                         .name("command.pokebreed")
                         .value(2)
+                    .endObject()
+                    .beginObject()
+                        .name("command.pokebreed.cooldown")
+                        .value(5)
                     .endObject()
                 .endObject()
                 .flush();
