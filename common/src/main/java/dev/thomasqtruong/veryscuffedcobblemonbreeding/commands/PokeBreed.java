@@ -1,10 +1,17 @@
 package dev.thomasqtruong.veryscuffedcobblemonbreeding.commands;
 
 import com.cobblemon.mod.common.Cobblemon;
+import com.cobblemon.mod.common.api.abilities.Ability;
+import com.cobblemon.mod.common.api.abilities.PotentialAbility;
+import com.cobblemon.mod.common.api.abilities.AbilityTemplate;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
+import com.cobblemon.mod.common.api.abilities.AbilityPool;
+import com.cobblemon.mod.common.api.pokemon.Natures;
 import com.cobblemon.mod.common.command.GivePokemon;
 import com.cobblemon.mod.common.api.storage.pc.PCBox;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
+import com.cobblemon.mod.common.pokemon.Nature;
+import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.stat.CobblemonStatProvider;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -23,12 +30,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -207,18 +216,18 @@ public class PokeBreed {
       // Ditto/self breeding = itself.
       if (dittoOrSelfBreeding) {
         if (!String.valueOf(breederPokemon1.getSpecies()).equals("ditto")) {
-        // Pokemon 1 is not ditto.
+          // Pokemon 1 is not ditto.
           baby = breederPokemon1.clone(true, true);
           while (baby.getPreEvolution() != null) {
-            Species test = baby.getPreEvolution().getSpecies();
-            baby.setSpecies(test);
+            Species preEvolution = baby.getPreEvolution().getSpecies();
+            baby.setSpecies(preEvolution);
           }
         } else {
-        // Pokemon 2 is not ditto.
+          // Pokemon 2 is not ditto.
           baby = breederPokemon2.clone(true, true);
           while (baby.getPreEvolution() != null) {
-            Species test = baby.getPreEvolution().getSpecies();
-            baby.setSpecies(test);
+            Species preEvolution = baby.getPreEvolution().getSpecies();
+            baby.setSpecies(preEvolution);
           }
         }
       } else {
@@ -228,9 +237,46 @@ public class PokeBreed {
 
       // Got the Pokemon, time to set its proper default.
       baby.setEvs(CobblemonStatProvider.INSTANCE.createEmptyEVs());
-      baby.initializeMoveset(true);
-      // Need to set happiness and level and maybe some more.
-      
+      // baby.initializeMoveset(true);
+      // Need to set happiness and maybe some more.
+      baby.setExperienceAndUpdateLevel(0);
+      baby.removeHeldItem();
+
+      Random RNG = new Random();
+      // Generate friendship (base% - 30%).
+      int intRNG = RNG.nextInt() % 77 + baby.getForm().getBaseFriendship();
+      baby.setFriendship(intRNG, true);
+
+      // Set gender and abilities.
+      int maleRatio = (int)(baby.getForm().getMaleRatio() * 100);
+      intRNG = RNG.nextInt(101);
+      if (maleRatio < 0) {
+      // No male ratio (genderless).
+        baby.setGender(Gender.GENDERLESS);
+      } else if (intRNG <= maleRatio) {
+      // In male ratio (male).
+        baby.setGender(Gender.MALE);
+      } else {
+      // Is female.
+        baby.setGender(Gender.FEMALE);
+      }
+      System.out.println(maleRatio + " " + intRNG);
+
+      // Priority.LOWEST = common ability, Priority.LOW = hidden ability.
+      AbilityPool test = baby.getForm().getAbilities();
+      for (PotentialAbility potentialAbility : test) {
+        AbilityTemplate test2 = potentialAbility.getTemplate();
+        Ability test3 = new Ability(test2, false);
+        System.out.println(potentialAbility.getPriority());
+        System.out.println(baby.getAbility().getForced());
+        System.out.println();
+      }
+
+      // No Everstone, RNG nature.
+      // if (baby.heldItem() != ) {
+      baby.setNature(Natures.INSTANCE.getRandomNature());
+      //}
+
       return baby;
     }
   }
