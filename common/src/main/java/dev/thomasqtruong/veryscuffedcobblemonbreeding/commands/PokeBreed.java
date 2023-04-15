@@ -259,26 +259,31 @@ public class PokeBreed {
 
     public Pokemon getPokemonBred() {
       Pokemon baby;
+
       // Ditto/self breeding = itself.
       if (dittoOrSelfBreeding) {
+        // Pokemon 1 is not ditto.
         if (!String.valueOf(breederPokemon1.getSpecies()).equals("ditto")) {
-          // Pokemon 1 is not ditto.
           baby = breederPokemon1.clone(true, true);
-          while (baby.getPreEvolution() != null) {
-            Species preEvolution = baby.getPreEvolution().getSpecies();
-            baby.setSpecies(preEvolution);
-          }
         } else {
-          // Pokemon 2 is not ditto.
+        // Pokemon 2 is not ditto.
           baby = breederPokemon2.clone(true, true);
-          while (baby.getPreEvolution() != null) {
-            Species preEvolution = baby.getPreEvolution().getSpecies();
-            baby.setSpecies(preEvolution);
-          }
         }
       } else {
-        // TESTING
-        baby = breederPokemon1.clone(true, true);
+      // Same egg group breeding.
+        // Pokemon1 is the mother, offspring = same species as mother.
+        if (breederPokemon1.getGender() == Gender.FEMALE) {
+          baby = breederPokemon1.clone(true, true);
+        } else {
+        // Pokemon2 is the mother.
+          baby = breederPokemon2.clone(true, true);
+        }
+      }
+
+      // Get base evolution.
+      while (baby.getPreEvolution() != null) {
+        Species preEvolution = baby.getPreEvolution().getSpecies();
+        baby.setSpecies(preEvolution);
       }
 
 
@@ -317,10 +322,24 @@ public class PokeBreed {
       return Gender.FEMALE;
     }
 
+    
+    public boolean hasHiddenAbility(Pokemon toCheck) {
+      List<AbilityTemplate> possibleHiddens = new ArrayList<>();
+
+      // Get list of hidden abilities.
+      for (PotentialAbility potentialAbility : toCheck.getForm().getAbilities()) {
+        if (potentialAbility.getPriority() == Priority.LOW) {
+          possibleHiddens.add(potentialAbility.getTemplate());
+        }
+      }
+
+      return possibleHiddens.contains(toCheck.getAbility().getTemplate());
+    }
+
 
     public Ability getRandomAbility(Pokemon getFor) {
       // Priority.LOWEST = common ability, Priority.LOW = hidden ability.
-      // Remove all hidden abilities.
+      // Get all possible abilities for Pokemon.
       AbilityPool possibleAbilities = getFor.getForm().getAbilities();
       // Defaulting to common ability.
       int intRNG = 100;
@@ -339,8 +358,8 @@ public class PokeBreed {
         }
       }
 
-      // Pokemon has hidden ability, offspring has a 60% chance of getting it too.
-      if (possibleHiddens.contains(getFor.getAbility().getTemplate())) {
+      // Parent(s) has hidden ability, offspring has a 60% chance of getting it too.
+      if (hasHiddenAbility(breederPokemon1) || hasHiddenAbility(breederPokemon2)) {
         intRNG = RNG.nextInt(100);  // 0-99
       }
 
