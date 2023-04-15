@@ -124,6 +124,7 @@ public class PokeBreed {
     // Used to generate random numbers in functions.
     Random RNG = new Random();
 
+    /* @@@ [Power Items]: For when power items released. @@@
     // Power item mapping (item name : stat).
     final HashMap<Text, Stats> powerItemsMap = new HashMap<>() {{
       put(Text.literal("Power Anklet"), Stats.SPEED);
@@ -133,6 +134,7 @@ public class PokeBreed {
       put(Text.literal("Power Lens"),   Stats.SPECIAL_ATTACK);
       put(Text.literal("Power Weight"), Stats.HP);
     }};
+    */
 
     // Constructor
     public BreedSession(ServerPlayerEntity breeder) {
@@ -384,16 +386,18 @@ public class PokeBreed {
 
       // Default is 3, 5 with destiny knot.
       int amountOfIVsToGet = 3;
-      /* @@@ FOR WHEN BREEDING ITEMS COME OUT @@@ (Not 100% done since item names are unknown.)
-      if (powerItems[0].getName() == "destiny knot"
-          || powerItems[1].getName() == "destiny knot") {
+      /* @@@ [Power Items]: For when power items are released. @@@
+      String parent1Item = breederPokemon1.heldItem().getName().getString();
+      String parent2Item = breederPokemon2.heldItem().getName().getString();
+
+      if (parent1Item.equals("Destiny Knot") || parent2Item.equals("Destiny Knot") {
         amountOfIVsToGet = 5;
       }
 
       // Keep power items only in list.
       for (int i = 0; i < powerItems.size(); ++i) {
         // Not power item.
-        if (!powerItemsMap.containsKey(powerItems[i].getName())) {
+        if (!powerItemsMap.containsKey(powerItems[i].getName().getString())) {
           powerItems.remove(i);
         }
       }
@@ -406,25 +410,23 @@ public class PokeBreed {
       } else if (powerItems.size() == 1) {
       // Only one parent has a power item.
         // Parent 2 has the item.
-        if (powerItems[0].equals(breederPokemon2.getName().getString())) {
+        if (powerItems[0].equals(parent2Item)) {
           intRNG = 1;
         }
       }
 
       // Get IV from parent1.
       if (intRNG == 0) {
-        String parentItem = breederPokemon1.heldItem().getName().getString();
-        Stats stat = powerItemsMap.get(parentItem);
+        Stats stat = powerItemsMap.get(parent1Item);
         newIVs.set(stat, breederPokemon1.getStat(stat);
         --amountOfIVsToGet;
-        toSet.remove(powerItemsMap.get(parentItem));
+        toSet.remove(powerItemsMap.get(parent1Item));
       } else if (intRNG == 1) {
       // Get IV from parent2.
-        String parentItem = breederPokemon2.heldItem().getName().getString();
-        Stats stat = powerItemsMap.get(parentItem);
+        Stats stat = powerItemsMap.get(parent2Item);
         newIVs.set(stat, breederPokemon2.getStat(stat);
         --amountOfIVsToGet;
-        toSet.remove(powerItemsMap.get(parentItem));
+        toSet.remove(powerItemsMap.get(parent2Item));
       }
       */
 
@@ -454,7 +456,7 @@ public class PokeBreed {
 
 
     public Nature getRandomNature() {
-      /* @@@ FOR WHEN EVERSTONES ARE IN THE GAME @@@
+      /* @@@ [Everstones]: For when Everstones are in the game. @@@
       // Get parents' items.
       String parent1Item = breederPokemon1.heldItem().getName().getString();
       String parent2Item = breederPokemon2.heldItem().getName().getString();
