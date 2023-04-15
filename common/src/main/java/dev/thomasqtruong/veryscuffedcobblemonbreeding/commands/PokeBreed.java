@@ -10,11 +10,12 @@ import com.cobblemon.mod.common.api.pokemon.Natures;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
+import com.cobblemon.mod.common.pokemon.Nature;
 import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.IVs;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import com.cobblemon.mod.common.pokemon.Species;
 import com.cobblemon.mod.common.pokemon.EVs;
+import com.cobblemon.mod.common.pokemon.Species;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.VeryScuffedCobblemonBreeding;
@@ -291,15 +292,9 @@ public class PokeBreed {
       baby.setFriendship(intRNG, true);
 
       baby.setGender(getRandomGender(baby));
-
       baby.setAbility(getRandomAbility(baby));
-
       baby.setIvs(getIVs());
-
-      // No Everstone, RNG nature.
-      // if (baby.heldItem() != ) {
-      baby.setNature(Natures.INSTANCE.getRandomNature());
-      //}
+      baby.setNature(getRandomNature());
 
       return baby;
     }
@@ -418,14 +413,14 @@ public class PokeBreed {
 
       // Get IV from parent1.
       if (intRNG == 0) {
-        String parentItem = breederPokemon1.getName().getString();
+        String parentItem = breederPokemon1.heldItem().getName().getString();
         Stats stat = powerItemsMap.get(parentItem);
         newIVs.set(stat, breederPokemon1.getStat(stat);
         --amountOfIVsToGet;
         toSet.remove(powerItemsMap.get(parentItem));
       } else if (intRNG == 1) {
       // Get IV from parent2.
-        String parentItem = breederPokemon1.getName().getString();
+        String parentItem = breederPokemon2.heldItem().getName().getString();
         Stats stat = powerItemsMap.get(parentItem);
         newIVs.set(stat, breederPokemon2.getStat(stat);
         --amountOfIVsToGet;
@@ -455,6 +450,36 @@ public class PokeBreed {
       }
 
       return newIVs;
+    }
+
+
+    public Nature getRandomNature() {
+      /* @@@ FOR WHEN EVERSTONES ARE IN THE GAME @@@
+      // Get parents' items.
+      String parent1Item = breederPokemon1.heldItem().getName().getString();
+      String parent2Item = breederPokemon2.heldItem().getName().getString();
+
+      // Both have everstones.
+      if (parent1Item.equals("Everstone") && parent2Item.equals("Everstone")) {
+        int parentRNG = RNG.nextInt(2);
+        // First parent's nature inherited.
+        if (parentRNG == 0) {
+          return breederPokemon1.getNature();
+        }
+        // Second parent's nature inherited.
+        return breederPokemon2.getNature();
+      }
+      // Only parent 1 has everstone.
+      if (parent1Item.equals("Everstone")) {
+        return breederPokemon1.getNature();
+      }
+      if (parent2Item.equals("Everstone")) {
+        return breederPokemon2.getNature();
+      }
+      */
+
+      // No one has everstone, randomize.
+      return Natures.INSTANCE.getRandomNature();
     }
   }
 }
