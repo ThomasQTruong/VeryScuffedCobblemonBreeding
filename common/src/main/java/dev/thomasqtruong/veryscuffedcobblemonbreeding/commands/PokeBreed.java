@@ -124,7 +124,7 @@ public class PokeBreed {
     // Used to generate random numbers in functions.
     Random RNG = new Random();
 
-    /* @@@ [Power Items]: For when power items released. @@@
+    /* @@@ [Power Items 1/3]: For when power items are released. @@@
     // Power item mapping (item name : stat).
     final HashMap<Text, Stats> powerItemsMap = new HashMap<>() {{
       put(Text.literal("Power Anklet"), Stats.SPEED);
@@ -375,6 +375,7 @@ public class PokeBreed {
 
       IVs newIVs = new IVs();
 
+      /*  @@@ [Power Items 2/3]: For when power items are released. @@@
       // Holds every pokemons' power item if exist.
       List<ItemStack> powerItems = new ArrayList<>();
       if (!breederPokemon1.heldItem().getName().getString().equals("Air")) {
@@ -383,10 +384,11 @@ public class PokeBreed {
       if (!breederPokemon2.heldItem().getName().getString().equals("Air")) {
         powerItems.add(breederPokemon2.heldItem());
       }
+      */
 
       // Default is 3, 5 with destiny knot.
       int amountOfIVsToGet = 3;
-      /* @@@ [Power Items]: For when power items are released. @@@
+      /* @@@ [Power Items 3/3]: For when power items are released. @@@
       String parent1Item = breederPokemon1.heldItem().getName().getString();
       String parent2Item = breederPokemon2.heldItem().getName().getString();
 
