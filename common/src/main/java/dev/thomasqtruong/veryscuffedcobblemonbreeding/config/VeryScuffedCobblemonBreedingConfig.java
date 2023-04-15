@@ -60,6 +60,7 @@ public class VeryScuffedCobblemonBreedingConfig {
                         .name("command.pokebreed")
                         .value(COMMAND_POKEBREED_PERMISSION_LEVEL)
                     .endObject()
+                    .name("cooldowns")
                     .beginObject()
                         .name("command.pokebreed.cooldown")
                         .value(COOLDOWN_IN_MINUTES)

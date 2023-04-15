@@ -7,7 +7,7 @@ import net.fabricmc.api.ModInitializer
 
 class CobblemonFabric : ModInitializer {
     override fun onInitialize() {
-        System.out.println("Fabric Mod init")
+        System.out.println("Fabric Mod init");
         VeryScuffedCobblemonBreeding.initialize();
     }
 }

@@ -11,13 +11,13 @@ val bundle: Configuration by configurations.creating {
 tasks {
 
     jar {
-        archiveBaseName.set("CobblemonExtras-${project.name}")
+        archiveBaseName.set("VeryScuffedCobblemonBreeding-${project.name}")
         archiveClassifier.set("dev-slim")
     }
 
     shadowJar {
         archiveClassifier.set("dev-shadow")
-        archiveBaseName.set("CobblemonExtras-${project.name}")
+        archiveBaseName.set("VeryScuffedCobblemonBreeding-${project.name}")
         configurations = listOf(bundle)
         mergeServiceFiles()
     }
@@ -25,7 +25,7 @@ tasks {
     remapJar {
         dependsOn(shadowJar)
         inputFile.set(shadowJar.flatMap { it.archiveFile })
-        archiveBaseName.set("CobblemonExtras-${project.name}")
+        archiveBaseName.set("VeryScuffedCobblemonBreeding-${project.name}")
         archiveVersion.set("${rootProject.version}")
     }
 
