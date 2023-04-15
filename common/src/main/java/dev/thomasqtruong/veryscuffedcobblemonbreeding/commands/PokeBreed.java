@@ -298,6 +298,14 @@ public class PokeBreed {
       int intRNG = RNG.nextInt() % 77 + baby.getForm().getBaseFriendship();
       baby.setFriendship(intRNG, true);
 
+      // Reset to default and RNG for shiny.
+      baby.setShiny(false);
+      intRNG = RNG.nextInt(8192);  // 0-8191
+      // Hit shiny (1/8192 chance).
+      if (intRNG == 0) {
+        baby.setShiny(true);
+      }
+
       baby.setGender(getRandomGender(baby));
       baby.setAbility(getRandomAbility(baby));
       baby.setIvs(getIVs());
