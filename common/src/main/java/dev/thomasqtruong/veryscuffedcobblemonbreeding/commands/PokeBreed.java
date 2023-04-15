@@ -411,25 +411,25 @@ public class PokeBreed {
       } else if (powerItems.size() == 1) {
       // Only one parent has a power item.
         // Parent 2 has the item.
-        if (powerItems[0] == breederPokemon2.heldItem()) {
+        if (powerItems[0].equals(breederPokemon2.getName().getString())) {
           intRNG = 1;
         }
       }
 
       // Get IV from parent1.
       if (intRNG == 0) {
-        Text parentItem = breederPokemon1.heldItem().getName();
+        String parentItem = breederPokemon1.getName().getString();
         Stats stat = powerItemsMap.get(parentItem);
         newIVs.set(stat, breederPokemon1.getStat(stat);
         --amountOfIVsToGet;
-        toSet.remove(powerItemsMap.get(breederPokemon1.heldItem().getName()));
+        toSet.remove(powerItemsMap.get(parentItem));
       } else if (intRNG == 1) {
       // Get IV from parent2.
-        Text parentItem = breederPokemon2.heldItem().getName();
+        String parentItem = breederPokemon1.getName().getString();
         Stats stat = powerItemsMap.get(parentItem);
         newIVs.set(stat, breederPokemon2.getStat(stat);
         --amountOfIVsToGet;
-        toSet.remove(powerItemsMap.get(breederPokemon2.heldItem().getName()));
+        toSet.remove(powerItemsMap.get(parentItem));
       }
       */
 
