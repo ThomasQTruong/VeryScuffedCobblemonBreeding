@@ -177,18 +177,6 @@ public class PokeBreed {
       } else {
         cancel("One of the Cobblemons does not exist!");
       }
-
-      // Pokemon exists.
-      /*
-      if (breederPokemon1 != null) {
-        // Give pokemon and evolve is neccessary.
-        // party2.add(breederPokemon1);
-        breederPokemon1.getEvolutions().forEach(evolution -> {
-          if (evolution instanceof TradeEvolution) {
-            evolution.evolve(breederPokemon1);
-          }
-        });
-      }*/
     }
 
 
@@ -352,6 +340,9 @@ public class PokeBreed {
       // if (baby.heldItem() != ) {
       baby.setNature(Natures.INSTANCE.getRandomNature());
       //}
+
+
+      // Get IVs.
 
       return baby;
     }

@@ -70,18 +70,19 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
   public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
     // Make GUI of size() size. 
     SimpleInventory inventory = new SimpleInventory(size());
+    ItemStack emptyPokemon = new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE);
 
     // Set up the GUI.
     for (int i = 0; i < size(); ++i) {
       inventory.setStack(i, new ItemStack(Items.GRAY_STAINED_GLASS_PANE).setCustomName(Text.of(" ")));
     }
     // Breeding choices.
-    inventory.setStack(6, new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE).setCustomName(Text.of("To Breed #1")));
+    inventory.setStack(6, emptyPokemon.setCustomName(Text.of("To Breed #1")));
     if (breedSession.breederPokemon1 != null) {
       inventory.setStack(6, PokemonUtility.pokemonToItem(breedSession.breederPokemon1));
     }
     inventory.setStack(7, new ItemStack(Items.PINK_STAINED_GLASS_PANE).setCustomName(Text.of(" ")));
-    inventory.setStack(8, new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE).setCustomName(Text.of("To Breed #2")));
+    inventory.setStack(8, emptyPokemon.setCustomName(Text.of("To Breed #2")));
     if (breedSession.breederPokemon2 != null) {
       inventory.setStack(8, PokemonUtility.pokemonToItem(breedSession.breederPokemon2));
     }
@@ -139,6 +140,16 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
           setStackInSlot(8, nextRevision(), pokemonItem);
         }
 
+        // Clicked on a breeding Pokemon, remove from breed.
+        if (slotIndex == 6) {
+          breedSession.breederPokemon1 = null;
+          inventory.setStack(6, emptyPokemon.setCustomName(Text.of("To Breed #1")));
+        }
+        if (slotIndex == 8) {
+          breedSession.breederPokemon2 = null;
+          inventory.setStack(8, emptyPokemon.setCustomName(Text.of("To Breed #2")));
+        }
+
         // Clicked next page.
         if (slotIndex == size() - 1) {
           // Indicate that the old GUI closing is a page change, not cancel.
@@ -176,6 +187,10 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
           // Pokemon exists.
           if (pokemon != null) {
             if (breedSession.breederPokemon1 == null) {
+              // Selected pokemon is already in 2nd slot.
+              if (breedSession.breederPokemon2 == pokemon) {
+                return;
+              }
               // First Pokemon not selected yet, select on first slot.
               breedSession.breederPokemon1 = pokemon;
               ItemStack pokemonItem = PokemonUtility.pokemonToItem(pokemon);
