@@ -8,17 +8,20 @@ import com.cobblemon.mod.common.api.abilities.AbilityTemplate;
 import com.cobblemon.mod.common.api.abilities.PotentialAbility;
 import com.cobblemon.mod.common.api.pokemon.Natures;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
+import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
 import com.cobblemon.mod.common.pokemon.Gender;
+import com.cobblemon.mod.common.pokemon.IVs;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
-import com.cobblemon.mod.common.pokemon.stat.CobblemonStatProvider;
+import com.cobblemon.mod.common.pokemon.EVs;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.VeryScuffedCobblemonBreeding;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.permissions.VeryScuffedCobblemonBreedingPermissions;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.screen.PokeBreedHandlerFactory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -117,6 +120,18 @@ public class PokeBreed {
     public boolean changePage = false;
     public boolean dittoOrSelfBreeding = false;
     UUID breederUUID;
+    // Used to generate random numbers in functions.
+    Random RNG = new Random();
+
+    // Power item mapping (item name : stat).
+    final HashMap<Text, Stats> powerItemsMap = new HashMap<>() {{
+      put(Text.literal("Power Anklet"), Stats.SPEED);
+      put(Text.literal("Power Band"),   Stats.SPECIAL_DEFENCE);
+      put(Text.literal("Power Belt"),   Stats.DEFENCE);
+      put(Text.literal("Power Bracer"), Stats.ATTACK);
+      put(Text.literal("Power Lens"),   Stats.SPECIAL_ATTACK);
+      put(Text.literal("Power Weight"), Stats.HP);
+    }};
 
     // Constructor
     public BreedSession(ServerPlayerEntity breeder) {
@@ -265,39 +280,53 @@ public class PokeBreed {
 
 
       // Got the Pokemon, time to set its proper default.
-      baby.setEvs(CobblemonStatProvider.INSTANCE.createEmptyEVs());
+      baby.setEvs(new EVs());
       baby.setExperienceAndUpdateLevel(0);
       baby.removeHeldItem();
       baby.initializeMoveset(true);
       baby.heal();
 
-
-      Random RNG = new Random();
       // Generate friendship (base% - 30%).
       int intRNG = RNG.nextInt() % 77 + baby.getForm().getBaseFriendship();
       baby.setFriendship(intRNG, true);
 
+      baby.setGender(getRandomGender(baby));
 
-      // Set gender and abilities.
-      int maleRatio = (int) (baby.getForm().getMaleRatio() * 100);
-      intRNG = RNG.nextInt(101);
+      baby.setAbility(getRandomAbility(baby));
+
+      baby.setIvs(getIVs());
+
+      // No Everstone, RNG nature.
+      // if (baby.heldItem() != ) {
+      baby.setNature(Natures.INSTANCE.getRandomNature());
+      //}
+
+      return baby;
+    }
+
+    
+    public Gender getRandomGender(Pokemon getFor) {
+      int maleRatio = (int) (getFor.getForm().getMaleRatio() * 100);
+      int genderRNG = RNG.nextInt(101);
+
       if (maleRatio < 0) {
         // No male ratio (genderless).
-        baby.setGender(Gender.GENDERLESS);
-      } else if (intRNG <= maleRatio) {
+        return Gender.GENDERLESS;
+      } else if (genderRNG <= maleRatio) {
         // In male ratio (male).
-        baby.setGender(Gender.MALE);
-      } else {
-        // Is female.
-        baby.setGender(Gender.FEMALE);
+        return Gender.MALE;
       }
+      // Is female.
+      return Gender.FEMALE;
+    }
 
 
+    public Ability getRandomAbility(Pokemon getFor) {
       // Priority.LOWEST = common ability, Priority.LOW = hidden ability.
       // Remove all hidden abilities.
-      AbilityPool possibleAbilities = baby.getForm().getAbilities();
+      AbilityPool possibleAbilities = getFor.getForm().getAbilities();
       // Defaulting to common ability.
-      intRNG = 100;
+      int intRNG = 100;
 
       // Get lists of all the possible hidden/common abilities.
       List<AbilityTemplate> possibleHiddens = new ArrayList<>();
@@ -314,7 +343,7 @@ public class PokeBreed {
       }
 
       // Pokemon has hidden ability, offspring has a 60% chance of getting it too.
-      if (possibleHiddens.contains(baby.getAbility().getTemplate())) {
+      if (possibleHiddens.contains(getFor.getAbility().getTemplate())) {
         intRNG = RNG.nextInt(100);  // 0-99
       }
 
@@ -323,28 +352,109 @@ public class PokeBreed {
         // Add every hidden ability to possibleDraws, draw random hidden if exists.
         if (possibleHiddens.size() > 0) {
           intRNG = RNG.nextInt(possibleHiddens.size());
-          Ability ability = new Ability(possibleHiddens.get(intRNG), false);
-          baby.setAbility(ability);
+          return new Ability(possibleHiddens.get(intRNG), false);
         }
       } else {
         // Did not hit hidden ability, draw random common if exists.
         if (possibleCommons.size() > 0) {
           intRNG = RNG.nextInt(possibleCommons.size());
-          Ability ability = new Ability(possibleCommons.get(intRNG), false);
-          baby.setAbility(ability);
+          return new Ability(possibleCommons.get(intRNG), false);
         }
       }
 
+      // No ability found.
+      return getFor.getAbility();
+    }
 
-      // No Everstone, RNG nature.
-      // if (baby.heldItem() != ) {
-      baby.setNature(Natures.INSTANCE.getRandomNature());
-      //}
+  
+    public IVs getIVs() {
+      List<Stats> toSet = new ArrayList<>();
+      toSet.add(Stats.SPEED);
+      toSet.add(Stats.SPECIAL_DEFENCE);
+      toSet.add(Stats.DEFENCE);
+      toSet.add(Stats.ATTACK);
+      toSet.add(Stats.SPECIAL_ATTACK);
+      toSet.add(Stats.HP);
 
+      IVs newIVs = new IVs();
 
-      // Get IVs.
+      // Holds every pokemons' power item if exist.
+      List<ItemStack> powerItems = new ArrayList<>();
+      if (!breederPokemon1.heldItem().getName().getString().equals("Air")) {
+        powerItems.add(breederPokemon1.heldItem());
+      }
+      if (!breederPokemon2.heldItem().getName().getString().equals("Air")) {
+        powerItems.add(breederPokemon2.heldItem());
+      }
 
-      return baby;
+      // Default is 3, 5 with destiny knot.
+      int amountOfIVsToGet = 3;
+      /* @@@ FOR WHEN BREEDING ITEMS COME OUT @@@ (Not 100% done since item names are unknown.)
+      if (powerItems[0].getName() == "destiny knot"
+          || powerItems[1].getName() == "destiny knot") {
+        amountOfIVsToGet = 5;
+      }
+
+      // Keep power items only in list.
+      for (int i = 0; i < powerItems.size(); ++i) {
+        // Not power item.
+        if (!powerItemsMap.containsKey(powerItems[i].getName())) {
+          powerItems.remove(i);
+        }
+      }
+
+      // Initially select parent1 to get IVs from. 
+      intRNG = 0;
+      // Both parents have a power item.
+      if (powerItems.size() == 2) {
+        intRNG = RNG.nextInt(2);  // Choose a random parent's IV.
+      } else if (powerItems.size() == 1) {
+      // Only one parent has a power item.
+        // Parent 2 has the item.
+        if (powerItems[0] == breederPokemon2.heldItem()) {
+          intRNG = 1;
+        }
+      }
+
+      // Get IV from parent1.
+      if (intRNG == 0) {
+        Text parentItem = breederPokemon1.heldItem().getName();
+        Stats stat = powerItemsMap.get(parentItem);
+        newIVs.set(stat, breederPokemon1.getStat(stat);
+        --amountOfIVsToGet;
+        toSet.remove(powerItemsMap.get(breederPokemon1.heldItem().getName()));
+      } else if (intRNG == 1) {
+      // Get IV from parent2.
+        Text parentItem = breederPokemon2.heldItem().getName();
+        Stats stat = powerItemsMap.get(parentItem);
+        newIVs.set(stat, breederPokemon2.getStat(stat);
+        --amountOfIVsToGet;
+        toSet.remove(powerItemsMap.get(breederPokemon2.heldItem().getName()));
+      }
+      */
+
+      // Inherit stats randomly from parents.
+      for (int i = 0; i < amountOfIVsToGet; ++i) {
+        int statIndex = RNG.nextInt(toSet.size());  // 0-(size - 1).
+        int randomParent = RNG.nextInt(2);
+        Stats stat = toSet.get(statIndex);
+
+        // Parent 1's stat gets inherited.
+        if (randomParent == 0) {
+          newIVs.set(stat, breederPokemon1.getIvs().get(stat));
+        } else {
+        // Parent 2's stat gets inherited.
+          newIVs.set(stat, breederPokemon2.getIvs().get(stat));
+        }
+        toSet.remove(statIndex);
+      }
+
+      // Get the rest of the stats.
+      for (Stats stat : toSet) {
+        newIVs.set(stat, RNG.nextInt(31));
+      }
+
+      return newIVs;
     }
   }
 }
