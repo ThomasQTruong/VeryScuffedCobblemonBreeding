@@ -68,7 +68,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
   @Nullable
   @Override
   public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-    // Make GUI of size() size. 
+    // Make GUI of size() size.
     SimpleInventory inventory = new SimpleInventory(size());
     ItemStack emptyPokemon = new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE);
 

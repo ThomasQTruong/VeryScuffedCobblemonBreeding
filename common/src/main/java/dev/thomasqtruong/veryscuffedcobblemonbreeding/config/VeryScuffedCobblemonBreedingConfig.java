@@ -57,16 +57,16 @@ public class VeryScuffedCobblemonBreedingConfig {
             writer.beginObject()
                     .name("permissionlevels")
                     .beginObject()
-                        .name("command.pokebreed")
-                        .value(COMMAND_POKEBREED_PERMISSION_LEVEL)
+                    .name("command.pokebreed")
+                    .value(COMMAND_POKEBREED_PERMISSION_LEVEL)
                     .endObject()
                     .name("cooldowns")
                     .beginObject()
-                        .name("command.pokebreed.cooldown")
-                        .value(COOLDOWN_IN_MINUTES)
+                    .name("command.pokebreed.cooldown")
+                    .value(COOLDOWN_IN_MINUTES)
                     .endObject()
-                .endObject()
-                .flush();
+                    .endObject()
+                    .flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

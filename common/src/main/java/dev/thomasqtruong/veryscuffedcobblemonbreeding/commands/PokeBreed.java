@@ -10,11 +10,11 @@ import com.cobblemon.mod.common.api.pokemon.Natures;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
-import com.cobblemon.mod.common.pokemon.Nature;
+import com.cobblemon.mod.common.pokemon.EVs;
 import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.IVs;
+import com.cobblemon.mod.common.pokemon.Nature;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import com.cobblemon.mod.common.pokemon.EVs;
 import com.cobblemon.mod.common.pokemon.Species;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -22,18 +22,12 @@ import dev.thomasqtruong.veryscuffedcobblemonbreeding.VeryScuffedCobblemonBreedi
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.permissions.VeryScuffedCobblemonBreedingPermissions;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.screen.PokeBreedHandlerFactory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -266,16 +260,16 @@ public class PokeBreed {
         if (!String.valueOf(breederPokemon1.getSpecies()).equals("ditto")) {
           baby = breederPokemon1.clone(true, true);
         } else {
-        // Pokemon 2 is not ditto.
+          // Pokemon 2 is not ditto.
           baby = breederPokemon2.clone(true, true);
         }
       } else {
-      // Same egg group breeding.
+        // Same egg group breeding.
         // Pokemon1 is the mother, offspring = same species as mother.
         if (breederPokemon1.getGender() == Gender.FEMALE) {
           baby = breederPokemon1.clone(true, true);
         } else {
-        // Pokemon2 is the mother.
+          // Pokemon2 is the mother.
           baby = breederPokemon2.clone(true, true);
         }
       }
@@ -314,7 +308,7 @@ public class PokeBreed {
       return baby;
     }
 
-    
+
     public Gender getRandomGender(Pokemon getFor) {
       int maleRatio = (int) (getFor.getForm().getMaleRatio() * 100);
       int genderRNG = RNG.nextInt(101);
@@ -330,7 +324,7 @@ public class PokeBreed {
       return Gender.FEMALE;
     }
 
-    
+
     public boolean hasHiddenAbility(Pokemon toCheck) {
       List<AbilityTemplate> possibleHiddens = new ArrayList<>();
 
@@ -361,7 +355,7 @@ public class PokeBreed {
         if (potentialAbility.getPriority() == Priority.LOW) {
           possibleHiddens.add(potentialAbility.getTemplate());
         } else if (potentialAbility.getPriority() == Priority.LOWEST) {
-        // Is a common ability.
+          // Is a common ability.
           possibleCommons.add(potentialAbility.getTemplate());
         }
       }
@@ -390,7 +384,7 @@ public class PokeBreed {
       return getFor.getAbility();
     }
 
-  
+
     public IVs getIVs() {
       List<Stats> toSet = new ArrayList<>();
       toSet.add(Stats.SPEED);
@@ -431,7 +425,7 @@ public class PokeBreed {
         }
       }
 
-      // Initially select parent1 to get IVs from. 
+      // Initially select parent1 to get IVs from.
       intRNG = 0;
       // Both parents have a power item.
       if (powerItems.size() == 2) {
@@ -469,7 +463,7 @@ public class PokeBreed {
         if (randomParent == 0) {
           newIVs.set(stat, breederPokemon1.getIvs().get(stat));
         } else {
-        // Parent 2's stat gets inherited.
+          // Parent 2's stat gets inherited.
           newIVs.set(stat, breederPokemon2.getIvs().get(stat));
         }
         toSet.remove(statIndex);
