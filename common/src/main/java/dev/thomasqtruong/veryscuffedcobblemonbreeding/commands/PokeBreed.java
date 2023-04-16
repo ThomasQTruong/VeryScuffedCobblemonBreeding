@@ -152,8 +152,8 @@ public class PokeBreed {
     public void doBreed() {
       // Breed cancelled, why are we still doing the breed?
       if (this.cancelled) {
-        System.out.println("Something funky is goin' on");
-        cancel("Something funky is goin' on.");
+        System.out.println("Something funky is goin' on (possibly differing configs)");
+        cancel("Something funky is goin' on (possibly differing configs).");
         return;
       }
       // Only provided 1 or 0 Pokemon to breed or pokemons don't exist.
