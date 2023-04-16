@@ -27,7 +27,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -219,10 +224,10 @@ public class PokeBreed {
       }
 
       // Get matching egg groups.
-      HashSet<EggGroup> matchingEggGroups = new HashSet<>();
+      int matchingEggGroupCount = 0;
       for (EggGroup g : pokemon1EggGroup) {
         if (pokemon2EggGroup.contains(g)) {
-          matchingEggGroups.add(g);
+          ++matchingEggGroupCount;
         }
       }
 
@@ -237,7 +242,7 @@ public class PokeBreed {
           // One is genderless.
           cancel("Cannot breed a genderless non-ditto species with a regular Cobblemon.");
           return false;
-        } else if (matchingEggGroups.size() == 0) {
+        } else if (matchingEggGroupCount == 0) {
           // Not the same egg group.
           cancel("Cannot breed two Cobblemons from different egg groups.");
           return false;
