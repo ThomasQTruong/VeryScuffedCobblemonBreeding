@@ -59,5 +59,5 @@ This would not have been possible without these open source works:
 Datapacks
 - [Cardboard Cutout Mon](https://modrinth.com/resourcepack/cardboard-cutout-mon) by [EikoBiko](https://modrinth.com/user/EikoBiko)
   - Adds cardboard cutout textures for Cobblemons that do not have a model yet.
-- [QALPS](https://modrinth.com/datapack/questionably-lore-accurate-pokemon-spawns) by [FrankTheFarmer2](https://modrinth.com/user/FrankTheFarmer2)
+- [Questionably Lore Accurate Pokemon Spawns](https://modrinth.com/datapack/questionably-lore-accurate-pokemon-spawns) by [FrankTheFarmer2](https://modrinth.com/user/FrankTheFarmer2)
   - Adds spawn files for some Cobblemons that do not have a model yet.
