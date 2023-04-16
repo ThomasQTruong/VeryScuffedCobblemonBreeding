@@ -2,6 +2,9 @@
 My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - It is an instant breeding system with a 5 minute default cooldown.
 - Can only breed Cobblemons from your PC.
+- Single player cooldown has a slight issue.
+  - If you rejoin, you are instantly out of cooldown.
+    - Cheat at your own will.
 - Tries to mimic the actual breeding system.
   - Can breed using ditto, self, or same egg groups.
     - Offspring will be the same as the mother.
@@ -37,6 +40,8 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 3. Confirm breed.
     - Confirmation button is between the Next/Previous buttons.
     - ![image](https://user-images.githubusercontent.com/58405482/232265217-2b3493e5-272d-43d8-b7b3-49dd284f98da.png)
+4. Trying to breed again when under cooldown will let you know the cooldown duration.
+    - ![image](https://user-images.githubusercontent.com/58405482/232265354-a8c21114-5a5d-4343-8be5-f7a41ed43727.png)
 
 ## Configs
 ### Permissions
