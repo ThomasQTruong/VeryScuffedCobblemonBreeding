@@ -28,11 +28,11 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 
 ## How to use:
 1. Open up the breeding GUI.
-  - Command: /pokebreed
+    - Command: /pokebreed
 2. Select two Cobblemons to breed.
-  - Next/Previous box is at the bottom right.
+    - Next/Previous box is at the bottom right.
 3. Confirm breed.
-  - Confirmation button is between the Next/Previous buttons.
+    - Confirmation button is between the Next/Previous buttons.
 
 ## Configs
 ### Permissions
