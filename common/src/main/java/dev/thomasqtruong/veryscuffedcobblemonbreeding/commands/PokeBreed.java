@@ -157,8 +157,8 @@ public class PokeBreed {
     public void doBreed() {
       // Breed cancelled, why are we still doing the breed?
       if (this.cancelled) {
-        System.out.println("Something funky is goin' on (possibly differing configs or reconnect)");
-        cancel("Something funky is goin' on (possibly differing configs or reconnect).");
+        System.out.println("Something funky is goin' on");
+        cancel("Something funky is goin' on.");
         return;
       }
       // Only provided 1 or 0 Pokemon to breed or pokemons don't exist.
@@ -468,10 +468,20 @@ public class PokeBreed {
 
         // Parent 1's stat gets inherited.
         if (randomParent == 0) {
-          newIVs.set(stat, breederPokemon1.getIvs().get(stat));
+          try {
+            newIVs.set(stat, breederPokemon1.getIvs().get(stat));
+          } catch (NullPointerException e) {
+            // Pokemon's IV is 0.
+            newIVs.set(stat, 0);
+          }
         } else {
           // Parent 2's stat gets inherited.
-          newIVs.set(stat, breederPokemon2.getIvs().get(stat));
+          try {
+            newIVs.set(stat, breederPokemon2.getIvs().get(stat));
+          } catch (NullPointerException e) {
+            // Pokemon's IV is 0.
+            newIVs.set(stat, 0);
+          }
         }
         toSet.remove(statIndex);
       }
