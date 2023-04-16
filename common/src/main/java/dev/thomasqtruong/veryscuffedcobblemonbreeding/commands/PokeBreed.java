@@ -152,8 +152,8 @@ public class PokeBreed {
     public void doBreed() {
       // Breed cancelled, why are we still doing the breed?
       if (this.cancelled) {
-        System.out.println("Something funky is goin' on (possibly differing configs)");
-        cancel("Something funky is goin' on (possibly differing configs).");
+        System.out.println("Something funky is goin' on (possibly differing configs or reconnect)");
+        cancel("Something funky is goin' on (possibly differing configs or reconnect).");
         return;
       }
       // Only provided 1 or 0 Pokemon to breed or pokemons don't exist.
@@ -211,6 +211,12 @@ public class PokeBreed {
         cancel("Cannot breed dittos.");
         return false;
       }
+      // Any are part of the Undiscovered egg group.
+      if (pokemon1EggGroup.contains(EggGroup.UNDISCOVERED) || pokemon2EggGroup.contains(EggGroup.UNDISCOVERED)) {
+        // In undiscovered egg group.
+        cancel("Cannot breed with Undiscovered egg group.");
+        return false;
+      }
 
       // Get matching egg groups.
       HashSet<EggGroup> matchingEggGroups = new HashSet<>();
@@ -230,10 +236,6 @@ public class PokeBreed {
         } else if (pokemon1Gender.equals("GENDERLESS") || pokemon2Gender.equals("GENDERLESS")) {
           // One is genderless.
           cancel("Cannot breed a genderless non-ditto species with a regular Cobblemon.");
-          return false;
-        } else if (pokemon1EggGroup.contains(EggGroup.UNDISCOVERED) || pokemon2EggGroup.contains(EggGroup.UNDISCOVERED)) {
-          // In undiscovered egg group.
-          cancel("Cannot breed with Undiscovered egg group.");
           return false;
         } else if (matchingEggGroups.size() == 0) {
           // Not the same egg group.
