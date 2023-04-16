@@ -25,7 +25,7 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
   - Gender gets randomized based on the Cobblemon's gender ratio.
   - Ability gets randomized.
     - Hidden abilities are supported.
-    - 60% chance to pass down if either parents have a hidden ability.
+      - 60% chance to pass down if either parents have a hidden ability.
 
 ## Download
 [Latest](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases/tag/1.0.0)
