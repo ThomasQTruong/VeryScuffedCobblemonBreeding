@@ -38,11 +38,15 @@ public class VeryScuffedCobblemonBreedingConfig {
         try {
             Type type = new TypeToken<HashMap<String, Integer>>(){}.getType();
             JsonObject obj = GSON.fromJson(new FileReader(configFile), JsonObject.class);
+            
             JsonObject permLevels = obj.get("permissionlevels").getAsJsonObject();
             HashMap<String, Integer> permissionMap = GSON.fromJson(permLevels, type);
 
+            JsonObject cooldowns = obj.get("cooldowns").getAsJsonObject();
+            HashMap<String, Integer> cooldownsMap = GSON.fromJson(cooldowns, type);
+
             COMMAND_POKEBREED_PERMISSION_LEVEL = permissionMap.getOrDefault("command.pokebreed", 2);
-            COOLDOWN_IN_MINUTES = permissionMap.getOrDefault("command.pokebreed.cooldown", 5);
+            COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.cooldown", 5);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
