@@ -1,5 +1,6 @@
 # Very Scuffed Cobblemon Breeding
 My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
+- This is my first ever mod! :)
 - It is an instant breeding system with a 5 minute default cooldown.
 - Can only breed Cobblemons from your PC.
 - Single player cooldown has a slight issue.
@@ -48,3 +49,15 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - command.pokebreed - default is permission level 2.
 ### Cooldowns
 - command.pokebreed.cooldown - default is 5 minutes.
+
+## Credits
+This would not have been possible without these open source works:
+- Side Mod Template: [CobblemonExtras](https://github.com/Xwaffle1/CobblemonExtras) by [Xwaffle1](https://github.com/Xwaffle1/)
+- Command Cooldown: [PokeGift](https://github.com/Polymeta/Pokegift/) by [Polymeta](https://github.com/Polymeta)
+
+## Addons used in images:
+Datapacks
+- [Cardboard Cutout Mon](https://modrinth.com/resourcepack/cardboard-cutout-mon) by [EikoBiko](https://modrinth.com/user/EikoBiko)
+  - Adds cardboard cutout textures for Cobblemons that do not have a model yet.
+- [QALPS](https://modrinth.com/datapack/questionably-lore-accurate-pokemon-spawns) by [FrankTheFarmer2](https://modrinth.com/user/FrankTheFarmer2)
+  - Adds spawn files for some Cobblemons that do not have a model yet.
