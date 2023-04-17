@@ -497,22 +497,18 @@ public class PokeBreed {
         int randomParent = RNG.nextInt(2);
         Stats stat = toSet.get(statIndex);
 
-        // Parent 1's stat gets inherited.
-        if (randomParent == 0) {
-          try {
+        // Try to inherit stat if exist.
+        try {
+          // Parent 1's stat gets inherited.
+          if (randomParent == 0) {
             newIVs.set(stat, breederPokemon1.getIvs().get(stat));
-          } catch (NullPointerException e) {
-            // Pokemon's IV is 0.
-            newIVs.set(stat, 0);
-          }
-        } else {
+          } else {
           // Parent 2's stat gets inherited.
-          try {
             newIVs.set(stat, breederPokemon2.getIvs().get(stat));
-          } catch (NullPointerException e) {
-            // Pokemon's IV is 0.
-            newIVs.set(stat, 0);
           }
+        } catch (NullPointerException e) {
+          // Pokemon's IV is 0.
+          newIVs.set(stat, 0);
         }
         toSet.remove(statIndex);
       }

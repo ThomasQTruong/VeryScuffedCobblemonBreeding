@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import dev.thomasqtruong.veryscuffedcobblemonbreeding.VeryScuffedCobblemonBreeding;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
@@ -21,6 +22,7 @@ public class VeryScuffedCobblemonBreedingConfig {
     public static int VIP_COMMAND_POKEBREED_PERMISSION_LEVEL = 3;  // VIP permission level.
     public static int COOLDOWN_IN_MINUTES = 5;      // Default: 5 minutes cooldown.
     public static int VIP_COOLDOWN_IN_MINUTES = 3;  // VIP breeding cooldown, default: 3.
+    public static int MAX_PC_BOX_COUNT = 30;        // Cobblemon's default is 30.
 
     public VeryScuffedCobblemonBreedingConfig() {
         init();
@@ -44,15 +46,17 @@ public class VeryScuffedCobblemonBreedingConfig {
 
             JsonObject permLevels = obj.get("permissionlevels").getAsJsonObject();
             HashMap<String, Integer> permissionMap = GSON.fromJson(permLevels, type);
+            COMMAND_POKEBREED_PERMISSION_LEVEL = permissionMap.getOrDefault("command.pokebreed", 2);
+            VIP_COMMAND_POKEBREED_PERMISSION_LEVEL = permissionMap.getOrDefault("command.vippokebreed", 3);
 
             JsonObject cooldowns = obj.get("cooldowns").getAsJsonObject();
             HashMap<String, Integer> cooldownsMap = GSON.fromJson(cooldowns, type);
-
-            COMMAND_POKEBREED_PERMISSION_LEVEL = permissionMap.getOrDefault("command.pokebreed", 2);
-            VIP_COMMAND_POKEBREED_PERMISSION_LEVEL = permissionMap.getOrDefault("command.vippokebreed", 3);
             COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.cooldown", 5);
             VIP_COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.vipcooldown", 3);
 
+            JsonObject settings = obj.get("settings").getAsJsonObject();
+            HashMap<String, Integer> settingsMap = GSON.fromJson(settings, type);
+            MAX_PC_BOX_COUNT = cooldownsMap.getOrDefault("command.pokebreed.maxpage", 30);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -65,19 +69,24 @@ public class VeryScuffedCobblemonBreedingConfig {
             JsonWriter writer = GSON.newJsonWriter(new FileWriter(file));
             writer.beginObject()
                     .name("permissionlevels")
-                    .beginObject()
-                    .name("command.pokebreed")
-                    .value(COMMAND_POKEBREED_PERMISSION_LEVEL)
-                    .name("command.vippokebreed")
-                    .value(VIP_COMMAND_POKEBREED_PERMISSION_LEVEL)
-                    .endObject()
+                        .beginObject()
+                            .name("command.pokebreed")
+                            .value(COMMAND_POKEBREED_PERMISSION_LEVEL)
+                            .name("command.vippokebreed")
+                            .value(VIP_COMMAND_POKEBREED_PERMISSION_LEVEL)
+                        .endObject()
                     .name("cooldowns")
-                    .beginObject()
-                    .name("command.pokebreed.cooldown")
-                    .value(COOLDOWN_IN_MINUTES)
-                    .name("command.pokebreed.vipcooldown")
-                    .value(VIP_COOLDOWN_IN_MINUTES)
-                    .endObject()
+                        .beginObject()
+                            .name("command.pokebreed.cooldown")
+                            .value(COOLDOWN_IN_MINUTES)
+                            .name("command.pokebreed.vipcooldown")
+                            .value(VIP_COOLDOWN_IN_MINUTES)
+                        .endObject()
+                    .name("settings")
+                        .beginObject()
+                            .name("command.pokebreed.maxpage")
+                            .value(MAX_PC_BOX_COUNT)
+                        .endObject()
                     .endObject()
                     .flush();
         } catch (IOException e) {

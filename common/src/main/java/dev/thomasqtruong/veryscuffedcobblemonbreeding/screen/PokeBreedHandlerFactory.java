@@ -2,10 +2,10 @@ package dev.thomasqtruong.veryscuffedcobblemonbreeding.screen;
 
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.NoPokemonStoreException;
-import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
 import com.cobblemon.mod.common.api.storage.pc.PCBox;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.util.ItemBuilder;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.commands.PokeBreed;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.util.PokemonUtility;
@@ -13,12 +13,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -44,9 +41,10 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     this.breedSession = breedSession;
     // Negative box number, loop back to the positive.
     if (boxNumber < 0) {
-      boxNumber = 29;
+      boxNumber = VeryScuffedCobblemonBreedingConfig.MAX_PC_BOX_COUNT - 1;
     }
-    this.boxNumber = boxNumber % 30;  // Keep within the max boxes range (0-29).
+    // Keep within the max boxes range.
+    this.boxNumber = boxNumber % VeryScuffedCobblemonBreedingConfig.MAX_PC_BOX_COUNT;
   }
 
   // Get GUI name.
