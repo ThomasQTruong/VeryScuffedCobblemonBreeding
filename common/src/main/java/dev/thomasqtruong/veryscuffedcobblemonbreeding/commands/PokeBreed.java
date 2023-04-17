@@ -52,6 +52,11 @@ public class PokeBreed {
                     .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src, VeryScuffedCobblemonBreeding.permissions.POKEBREED_PERMISSION))
                     .executes(this::execute)
     );
+    dispatcher.register(
+            literal("pokebreed")
+                    .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src, VeryScuffedCobblemonBreeding.permissions.VIP_POKEBREED_PERMISSION))
+                    .executes(this::execute)
+    );
     // Set up scheduler.
     scheduler = new ScheduledThreadPoolExecutor(1, r -> {
       Thread thread = Executors.defaultThreadFactory().newThread(r);
@@ -66,6 +71,9 @@ public class PokeBreed {
   private int execute(CommandContext<ServerCommandSource> ctx) {
     if (ctx.getSource().getPlayer() != null) {
       ServerPlayerEntity player = ctx.getSource().getPlayer();
+      // Checks whether player has VIP permissions.
+      boolean isVIP = VeryScuffedCobblemonBreedingPermissions.checkPermission(ctx.getSource(),
+              VeryScuffedCobblemonBreeding.permissions.VIP_POKEBREED_PERMISSION);
 
       // Breed session already exists for player.
       if (breedSessions.containsKey(player.getUuid())) {
@@ -79,9 +87,18 @@ public class PokeBreed {
           // Pokemon was bred before; check if it never got off cooldown.
           long timeSince = System.currentTimeMillis() - breedSession.timeBred;
 
-          // Cooldown was supposed to be over!
-          if (timeSince > 1000L * 60 * VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES) {
-            breedSessions.remove(player.getUuid());
+          // User is a VIP.
+          if (isVIP) {
+            // Cooldown was supposed to be over!
+            if (timeSince > 1000L * 60 * VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES) {
+              breedSessions.remove(player.getUuid());
+            }
+          } else {
+            // User is not a VIP.
+            // Cooldown was supposed to be over!
+            if (timeSince > 1000L * 60 * VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES) {
+              breedSessions.remove(player.getUuid());
+            }
           }
         }
       }
@@ -92,7 +109,11 @@ public class PokeBreed {
         BreedSession breedSession = breedSessions.get(player.getUuid());
         long cooldownDuration = (System.currentTimeMillis() - breedSession.timeBred) / 1000;
         // Total cooldown time - time since = time left.
-        cooldownDuration = (VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
+        if (isVIP) {;
+          cooldownDuration = (VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
+        } else {
+          cooldownDuration = (VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
+        }
 
         Text toSend = Text.literal("Breed cooldown: " + cooldownDuration + " seconds.").formatted(Formatting.RED);
         player.sendMessage(toSend);
@@ -102,6 +123,7 @@ public class PokeBreed {
 
       // Create and start breeding session.
       BreedSession breedSession = new BreedSession(player);
+      breedSession.isVIP = isVIP;
       breedSessions.put(player.getUuid(), breedSession);
       breedSession.start();
     }
@@ -120,6 +142,7 @@ public class PokeBreed {
     public boolean changePage = false;
     public boolean dittoOrSelfBreeding = false;
     UUID breederUUID;
+    boolean isVIP = false;
     // Used to generate random numbers in functions.
     Random RNG = new Random();
 
@@ -187,9 +210,17 @@ public class PokeBreed {
         // Send success message and set cooldown.
         Text toSend = Text.literal("Breed complete!").formatted(Formatting.GREEN);
         breeder.sendMessage(toSend);
-        scheduler.schedule(() -> {
-          breedSessions.remove(breederUUID);
-        }, VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
+        // Player has VIP status.
+        if (isVIP) {
+          scheduler.schedule(() -> {
+            breedSessions.remove(breederUUID);
+          }, VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
+        } else {
+          // Player does not have VIP status.
+          scheduler.schedule(() -> {
+            breedSessions.remove(breederUUID);
+          }, VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
+        }
         timeBred = System.currentTimeMillis();
       } else {
         cancel("One of the Cobblemons does not exist!");

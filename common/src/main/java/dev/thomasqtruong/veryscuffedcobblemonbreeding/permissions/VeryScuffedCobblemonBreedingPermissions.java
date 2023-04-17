@@ -9,9 +9,11 @@ import net.minecraft.command.CommandSource;
 public class VeryScuffedCobblemonBreedingPermissions {
 
     public final CobblemonPermission POKEBREED_PERMISSION;
+    public final CobblemonPermission VIP_POKEBREED_PERMISSION;
 
     public VeryScuffedCobblemonBreedingPermissions() {
         this.POKEBREED_PERMISSION = new CobblemonPermission("veryscuffedcobblemonbreeding.command.pokebreed", toPermLevel(VeryScuffedCobblemonBreedingConfig.COMMAND_POKEBREED_PERMISSION_LEVEL));
+        this.VIP_POKEBREED_PERMISSION = new CobblemonPermission("veryscuffedcobblemonbreeding.command.vippokebreed", toPermLevel(VeryScuffedCobblemonBreedingConfig.VIP_COMMAND_POKEBREED_PERMISSION_LEVEL));
     }
 
     public PermissionLevel toPermLevel(int permLevel) {
