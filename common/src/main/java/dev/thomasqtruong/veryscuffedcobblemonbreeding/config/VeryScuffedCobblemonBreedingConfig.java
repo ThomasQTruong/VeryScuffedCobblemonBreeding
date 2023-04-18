@@ -22,7 +22,6 @@ public class VeryScuffedCobblemonBreedingConfig {
     public static int VIP_COMMAND_POKEBREED_PERMISSION_LEVEL = 3;  // VIP permission level.
     public static int COOLDOWN_IN_MINUTES = 5;      // Default: 5 minutes cooldown.
     public static int VIP_COOLDOWN_IN_MINUTES = 3;  // VIP breeding cooldown, default: 3.
-    public static int MAX_PC_BOX_COUNT = 30;        // Cobblemon's default is 30.
 
     public VeryScuffedCobblemonBreedingConfig() {
         init();
@@ -53,10 +52,6 @@ public class VeryScuffedCobblemonBreedingConfig {
             HashMap<String, Integer> cooldownsMap = GSON.fromJson(cooldowns, type);
             COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.cooldown", 5);
             VIP_COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.vipcooldown", 3);
-
-            JsonObject settings = obj.get("settings").getAsJsonObject();
-            HashMap<String, Integer> settingsMap = GSON.fromJson(settings, type);
-            MAX_PC_BOX_COUNT = cooldownsMap.getOrDefault("command.pokebreed.maxpage", 30);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -81,11 +76,6 @@ public class VeryScuffedCobblemonBreedingConfig {
                             .value(COOLDOWN_IN_MINUTES)
                             .name("command.pokebreed.vipcooldown")
                             .value(VIP_COOLDOWN_IN_MINUTES)
-                        .endObject()
-                    .name("settings")
-                        .beginObject()
-                            .name("command.pokebreed.maxpage")
-                            .value(MAX_PC_BOX_COUNT)
                         .endObject()
                     .endObject()
                     .flush();

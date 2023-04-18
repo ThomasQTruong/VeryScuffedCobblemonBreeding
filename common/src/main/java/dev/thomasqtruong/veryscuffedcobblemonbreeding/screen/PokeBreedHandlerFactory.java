@@ -39,12 +39,14 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
   // Constructor for next/previous page.
   public PokeBreedHandlerFactory(PokeBreed.BreedSession breedSession, int boxNumber) {
     this.breedSession = breedSession;
-    // Negative box number, loop back to the positive.
+    // Negative, figure out the actual page number. 
     if (boxNumber < 0) {
-      boxNumber = VeryScuffedCobblemonBreedingConfig.MAX_PC_BOX_COUNT - 1;
+      boxNumber *= -1;                                 // Turn to positive.
+      boxNumber %= breedSession.maxPCSize;             // Mod by max.
+      boxNumber = breedSession.maxPCSize - boxNumber;  // Max - modded = current.
     }
-    // Keep within the max boxes range.
-    this.boxNumber = boxNumber % VeryScuffedCobblemonBreedingConfig.MAX_PC_BOX_COUNT;
+    // Positive, keep within the max boxes range.
+    this.boxNumber = boxNumber % breedSession.maxPCSize;
   }
 
   // Get GUI name.
@@ -55,7 +57,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
   // Get sizes.
   int rows() {
-    return 5;
+    return 6;
   }
 
   int size() {
@@ -89,7 +91,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     inventory.setStack(size() - 2, new ItemStack(Items.GRAY_DYE).setCustomName(Text.literal("Click to Breed")));
     inventory.setStack(size() - 3, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(Text.literal("Previous Box")).build());
 
-    // Grab player's PC data.
+    // Grab player's Party and PC data.
     ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
     PCStore breederStorage = null;
     try {
@@ -97,12 +99,14 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     } catch (NoPokemonStoreException e) {
       return null;
     }
+    System.out.println(boxNumber);
     PCBox box = breederStorage.getBoxes().get(boxNumber);
+    breedSession.maxPCSize = breederStorage.getBoxes().size();
 
     // Set up PC in GUI (for every pokemon in box [box size = 6x5]).
     for (int i = 0; i < 30; i++) {
       Pokemon pokemon = box.get(i);
-      double row = Math.floor((double) i / 6.0D);
+      double row = 1 + Math.floor((double) i / 6.0D);
       int index = i % 6;
 
       if (pokemon != null) {
@@ -116,7 +120,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
       }
     }
 
-    GenericContainerScreenHandler container = new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X5, syncId, inv, inventory, rows()) {
+    GenericContainerScreenHandler container = new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6, syncId, inv, inventory, rows()) {
       @Override
       public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         // If player cancels.

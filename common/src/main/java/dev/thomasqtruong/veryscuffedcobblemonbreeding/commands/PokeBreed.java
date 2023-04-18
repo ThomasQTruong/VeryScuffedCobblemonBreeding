@@ -133,7 +133,10 @@ public class PokeBreed {
   public class BreedSession {
     // Breeder information.
     public ServerPlayerEntity breeder;
+    UUID breederUUID;
+    boolean isVIP = false;
     // Breeding information.
+    public int maxPCSize = 30;  // 30 by default.
     public boolean breederAccept = false;
     public Pokemon breederPokemon1;
     public Pokemon breederPokemon2;
@@ -141,8 +144,6 @@ public class PokeBreed {
     public boolean cancelled = false;
     public boolean changePage = false;
     public boolean dittoOrSelfBreeding = false;
-    UUID breederUUID;
-    boolean isVIP = false;
     // Used to generate random numbers in functions.
     Random RNG = new Random();
 
