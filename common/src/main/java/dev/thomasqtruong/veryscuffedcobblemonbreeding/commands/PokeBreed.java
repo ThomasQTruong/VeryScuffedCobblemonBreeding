@@ -44,6 +44,8 @@ public class PokeBreed {
   public static ScheduledThreadPoolExecutor scheduler;
   // Keeps track of every breeding session.
   public HashMap<UUID, BreedSession> breedSessions = new HashMap<>();
+  // Used to generate random numbers in functions.
+  Random RNG = new Random();
 
   public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
     // Set up command.
@@ -137,6 +139,7 @@ public class PokeBreed {
     boolean isVIP = false;
     // Breeding information.
     public int maxPCSize = 30;  // 30 by default.
+    public int pageChangeSetting = 1;  // Amount of pages to change for PC.
     public boolean breederAccept = false;
     public Pokemon breederPokemon1;
     public Pokemon breederPokemon2;
@@ -144,8 +147,6 @@ public class PokeBreed {
     public boolean cancelled = false;
     public boolean changePage = false;
     public boolean dittoOrSelfBreeding = false;
-    // Used to generate random numbers in functions.
-    Random RNG = new Random();
 
     /* @@@ [Power Items 1/3]: For when power items are released. @@@
     // Power item mapping (item name : stat).
