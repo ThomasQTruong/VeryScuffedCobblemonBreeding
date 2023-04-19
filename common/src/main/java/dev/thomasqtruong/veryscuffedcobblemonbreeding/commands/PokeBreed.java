@@ -7,6 +7,7 @@ import com.cobblemon.mod.common.api.abilities.AbilityPool;
 import com.cobblemon.mod.common.api.abilities.AbilityTemplate;
 import com.cobblemon.mod.common.api.abilities.PotentialAbility;
 import com.cobblemon.mod.common.api.pokemon.Natures;
+import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -319,7 +321,11 @@ public class PokeBreed {
         Species preEvolution = baby.getPreEvolution().getSpecies();
         baby.setSpecies(preEvolution);
       }
-
+      
+      // SPECIAL CASE: manaphy -> phione.
+      if (String.valueOf(baby.getSpecies()).equals("manaphy")) {
+        baby.setSpecies(Objects.requireNonNull(PokemonSpecies.INSTANCE.getByName("phione")));
+      }
 
       // Got the Pokemon, time to set its proper default.
       baby.setEvs(new EVs());
