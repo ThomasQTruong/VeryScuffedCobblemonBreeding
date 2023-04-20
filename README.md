@@ -2,7 +2,6 @@
 My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - This is my first ever mod! :)
 - It is an instant breeding system with a 5 minute default cooldown.
-- Can only breed Cobblemons from your PC.
 - Single player cooldown has a slight issue.
     - If you rejoin, you are instantly out of cooldown.
         - Cheat at your own will.
