@@ -10,7 +10,7 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
         - Offspring will be the same as the mother.
         - Offspring is the base evolution.
         - Moves and EXP are reset.
-        - 1/8192 chance to get a shiny.
+        - Shinies are obtainable (same rates as your Cobblemon config).
     - Also has the breeding restrictions.
         - No same genders.
         - No differing egg groups.
