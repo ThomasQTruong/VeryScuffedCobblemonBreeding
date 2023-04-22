@@ -341,10 +341,13 @@ public class PokeBreed {
 
       // Reset to default and RNG for shiny.
       baby.setShiny(false);
-      intRNG = RNG.nextInt(CobblemonConfig.shinyRate);  // 0-shinyRate
-      // Hit shiny (1/shinyRate chance).
-      if (intRNG == 0) {
-        baby.setShiny(true);
+      // Shinies enabled.
+      if (CobblemonConfig.shinyRate > 0) {
+        intRNG = RNG.nextInt(CobblemonConfig.shinyRate);  // 0-shinyRate
+        // Hit shiny (1/shinyRate chance).
+        if (intRNG == 0) {
+          baby.setShiny(true);
+        }
       }
 
       baby.setGender(getRandomGender(baby));
