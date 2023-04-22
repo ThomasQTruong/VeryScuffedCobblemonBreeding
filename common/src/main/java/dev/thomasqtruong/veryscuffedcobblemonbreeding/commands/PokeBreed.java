@@ -24,6 +24,7 @@ import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.CobblemonConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.permissions.VeryScuffedCobblemonBreedingPermissions;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.screen.PokeBreedHandlerFactory;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -535,10 +536,19 @@ public class PokeBreed {
 
 
     public Nature getRandomNature() {
-      /* @@@ [Everstones]: For when Everstones are in the game. @@@
-      // Get parents' items.
-      String parent1Item = breederPokemon1.heldItem().getName().getString();
-      String parent2Item = breederPokemon2.heldItem().getName().getString();
+      // Get parents' items' NBT.
+      NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();
+      NbtCompound fullNbt2 = breederPokemon2.heldItem().getNbt();
+
+      // Get items' title NBT if exists.
+      String parent1Item = "";
+      if (fullNbt1 != null && fullNbt1.contains("breedItem")) {
+        parent1Item = fullNbt1.getString("breedItem");
+      }
+      String parent2Item = "";
+      if (fullNbt2 != null && fullNbt2.contains("breedItem")) {
+        parent2Item = fullNbt2.getString("breedItem");
+      }
 
       // Both have everstones.
       if (parent1Item.equals("Everstone") && parent2Item.equals("Everstone")) {
@@ -557,7 +567,6 @@ public class PokeBreed {
       if (parent2Item.equals("Everstone")) {
         return breederPokemon2.getNature();
       }
-      */
 
       // No one has everstone, randomize.
       return Natures.INSTANCE.getRandomNature();
