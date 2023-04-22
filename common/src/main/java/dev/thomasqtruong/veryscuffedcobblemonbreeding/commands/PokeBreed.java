@@ -20,6 +20,7 @@ import com.cobblemon.mod.common.pokemon.Species;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.VeryScuffedCobblemonBreeding;
+import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.CobblemonConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.permissions.VeryScuffedCobblemonBreedingPermissions;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.screen.PokeBreedHandlerFactory;
@@ -340,8 +341,8 @@ public class PokeBreed {
 
       // Reset to default and RNG for shiny.
       baby.setShiny(false);
-      intRNG = RNG.nextInt(8192);  // 0-8191
-      // Hit shiny (1/8192 chance).
+      intRNG = RNG.nextInt(CobblemonConfig.shinyRate);  // 0-shinyRate
+      // Hit shiny (1/shinyRate chance).
       if (intRNG == 0) {
         baby.setShiny(true);
       }
