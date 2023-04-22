@@ -43,6 +43,21 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 4. Trying to breed again when under cooldown will let you know the cooldown duration.
     - ![image](https://user-images.githubusercontent.com/58405482/232265354-a8c21114-5a5d-4343-8be5-f7a41ed43727.png)
 
+## Getting breeding items:
+- Only obtainable via commands.
+  - Mainly dedicated for servers to sell these special items.
+- Can change the item to whatever you want.
+    - The only thing that matters is the **breedItem** NBT attribute.
+- Use commands to get breeding items:
+    - > /give **[Player]** minecraft:light_gray_dye{display:{Name:'{"text":"Everstone","italic":"false"}'}, breedItem:"Everstone"}
+    - > /give **[Player]** minecraft:red_dye{display:{Name:'{"text":"Destiny Knot","italic":"false"}'}, breedItem:"Destiny Knot"}
+    - > /give **[Player]** minecraft:light_blue_dye{display:{Name:'{"text":"Power Anklet","italic":"false"}'}, breedItem:"Power Anklet"}
+    - > /give **[Player]** minecraft:yellow_dye{display:{Name:'{"text":"Power Band","italic":"false"}'}, breedItem:"Power Band"}
+    - > /give **[Player]** minecraft:orange_dye{display:{Name:'{"text":"Power Belt","italic":"false"}'}, breedItem:"Power Belt"}
+    - > /give **[Player]** minecraft:pink_dye{display:{Name:'{"text":"Power Bracer","italic":"false"}'}, breedItem:"Power Bracer"}
+    - > /give **[Player]** minecraft:purple_dye{display:{Name:'{"text":"Power Lens","italic":"false"}'}, breedItem:"Power Lens"}
+    - > /give **[Player]** minecraft:lime_dye{display:{Name:'{"text":"Power Weight","italic":"false"}'}, breedItem:"Power Weight"}
+
 ## Configs
 ### Permissions
 - command.pokebreed - default for MC is level 2.

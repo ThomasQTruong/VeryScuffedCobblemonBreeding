@@ -115,7 +115,7 @@ public class PokeBreed {
         BreedSession breedSession = breedSessions.get(player.getUuid());
         long cooldownDuration = (System.currentTimeMillis() - breedSession.timeBred) / 1000;
         // Total cooldown time - time since = time left.
-        if (isVIP) {;
+        if (isVIP) {
           cooldownDuration = (VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
         } else {
           cooldownDuration = (VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
@@ -152,17 +152,15 @@ public class PokeBreed {
     public boolean changePage = false;
     public boolean dittoOrSelfBreeding = false;
 
-    /* @@@ [Power Items 1/3]: For when power items are released. @@@
     // Power item mapping (item name : stat).
-    final HashMap<Text, Stats> powerItemsMap = new HashMap<>() {{
-      put(Text.literal("Power Anklet"), Stats.SPEED);
-      put(Text.literal("Power Band"),   Stats.SPECIAL_DEFENCE);
-      put(Text.literal("Power Belt"),   Stats.DEFENCE);
-      put(Text.literal("Power Bracer"), Stats.ATTACK);
-      put(Text.literal("Power Lens"),   Stats.SPECIAL_ATTACK);
-      put(Text.literal("Power Weight"), Stats.HP);
+    final HashMap<String, Stats> powerItemsMap = new HashMap<>() {{
+      put("Power Anklet", Stats.SPEED);
+      put("Power Band",   Stats.SPECIAL_DEFENCE);
+      put("Power Belt",   Stats.DEFENCE);
+      put("Power Bracer", Stats.ATTACK);
+      put("Power Lens",   Stats.SPECIAL_ATTACK);
+      put("Power Weight", Stats.HP);
     }};
-    */
 
     // Constructor
     public BreedSession(ServerPlayerEntity breeder) {
@@ -222,7 +220,7 @@ public class PokeBreed {
             breedSessions.remove(breederUUID);
           }, VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
         } else {
-          // Player does not have VIP status.
+        // Player does not have VIP status.
           scheduler.schedule(() -> {
             breedSessions.remove(breederUUID);
           }, VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
@@ -304,16 +302,16 @@ public class PokeBreed {
         if (!String.valueOf(breederPokemon1.getSpecies()).equals("ditto")) {
           baby = breederPokemon1.clone(true, true);
         } else {
-          // Pokemon 2 is not ditto.
+        // Pokemon 2 is not ditto.
           baby = breederPokemon2.clone(true, true);
         }
       } else {
-        // Same egg group breeding.
+      // Same egg group breeding.
         // Pokemon1 is the mother, offspring = same species as mother.
         if (breederPokemon1.getGender() == Gender.FEMALE) {
           baby = breederPokemon1.clone(true, true);
         } else {
-          // Pokemon2 is the mother.
+        // Pokemon2 is the mother.
           baby = breederPokemon2.clone(true, true);
         }
       }
@@ -406,7 +404,7 @@ public class PokeBreed {
         if (potentialAbility.getPriority() == Priority.LOW) {
           possibleHiddens.add(potentialAbility.getTemplate());
         } else if (potentialAbility.getPriority() == Priority.LOWEST) {
-          // Is a common ability.
+        // Is a common ability.
           possibleCommons.add(potentialAbility.getTemplate());
         }
       }
@@ -447,62 +445,61 @@ public class PokeBreed {
 
       IVs newIVs = new IVs();
 
-      /*  @@@ [Power Items 2/3]: For when power items are released. @@@
-      // Holds every pokemons' power item if exist.
-      List<ItemStack> powerItems = new ArrayList<>();
-      if (!breederPokemon1.heldItem().getName().getString().equals("Air")) {
-        powerItems.add(breederPokemon1.heldItem());
+      // Get parents' items' NBT.
+      NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();
+      NbtCompound fullNbt2 = breederPokemon2.heldItem().getNbt();
+
+      // Get items' title NBT if exists.
+      String parent1Item = "";
+      if (fullNbt1 != null && fullNbt1.contains("breedItem")) {
+        parent1Item = fullNbt1.getString("breedItem");
       }
-      if (!breederPokemon2.heldItem().getName().getString().equals("Air")) {
-        powerItems.add(breederPokemon2.heldItem());
+      String parent2Item = "";
+      if (fullNbt2 != null && fullNbt2.contains("breedItem")) {
+        parent2Item = fullNbt2.getString("breedItem");
       }
-      */
 
       // Default is 3, 5 with destiny knot.
       int amountOfIVsToGet = 3;
-      /* @@@ [Power Items 3/3]: For when power items are released. @@@
-      String parent1Item = breederPokemon1.heldItem().getName().getString();
-      String parent2Item = breederPokemon2.heldItem().getName().getString();
-
-      if (parent1Item.equals("Destiny Knot") || parent2Item.equals("Destiny Knot") {
+      if (parent1Item.equals("Destiny Knot") || parent2Item.equals("Destiny Knot")) {
         amountOfIVsToGet = 5;
       }
 
-      // Keep power items only in list.
-      for (int i = 0; i < powerItems.size(); ++i) {
-        // Not power item.
-        if (!powerItemsMap.containsKey(powerItems[i].getName().getString())) {
-          powerItems.remove(i);
-        }
+      // Count how many Cobblemons have a power item.
+      int powerItemsCount = 0;
+      if (powerItemsMap.containsKey(parent1Item)) {
+        ++powerItemsCount;
+      }
+      if (powerItemsMap.containsKey(parent2Item)) {
+        ++powerItemsCount;
       }
 
       // Initially select parent1 to get IVs from.
-      intRNG = 0;
+      int intRNG = 0;
       // Both parents have a power item.
-      if (powerItems.size() == 2) {
+      if (powerItemsCount == 2) {
         intRNG = RNG.nextInt(2);  // Choose a random parent's IV.
-      } else if (powerItems.size() == 1) {
+      } else if (powerItemsCount == 1) {
       // Only one parent has a power item.
         // Parent 2 has the item.
-        if (powerItems[0].equals(parent2Item)) {
+        if (powerItemsMap.containsKey(parent2Item)) {
           intRNG = 1;
         }
       }
 
-      // Get IV from parent1.
-      if (intRNG == 0) {
+      // Get IV from parent1 if holding power item.
+      if (powerItemsCount > 0 && intRNG == 0) {
         Stats stat = powerItemsMap.get(parent1Item);
-        newIVs.set(stat, breederPokemon1.getStat(stat);
+        newIVs.set(stat, breederPokemon1.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
         toSet.remove(powerItemsMap.get(parent1Item));
-      } else if (intRNG == 1) {
-      // Get IV from parent2.
+      } else if (powerItemsCount > 0) {
+      // Get IV from parent2 if holding power item.
         Stats stat = powerItemsMap.get(parent2Item);
-        newIVs.set(stat, breederPokemon2.getStat(stat);
+        newIVs.set(stat, breederPokemon2.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
         toSet.remove(powerItemsMap.get(parent2Item));
       }
-      */
 
       // Inherit stats randomly from parents.
       for (int i = 0; i < amountOfIVsToGet; ++i) {
@@ -510,18 +507,12 @@ public class PokeBreed {
         int randomParent = RNG.nextInt(2);
         Stats stat = toSet.get(statIndex);
 
-        // Try to inherit stat if exist.
-        try {
-          // Parent 1's stat gets inherited.
-          if (randomParent == 0) {
-            newIVs.set(stat, breederPokemon1.getIvs().get(stat));
-          } else {
-          // Parent 2's stat gets inherited.
-            newIVs.set(stat, breederPokemon2.getIvs().get(stat));
-          }
-        } catch (NullPointerException e) {
-          // Pokemon's IV is 0.
-          newIVs.set(stat, 0);
+        // Parent 1's stat gets inherited.
+        if (randomParent == 0) {
+          newIVs.set(stat, breederPokemon1.getIvs().getOrDefault(stat));
+        } else {
+        // Parent 2's stat gets inherited.
+          newIVs.set(stat, breederPokemon2.getIvs().getOrDefault(stat));
         }
         toSet.remove(statIndex);
       }
