@@ -43,6 +43,9 @@ import java.util.concurrent.TimeUnit;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
+/**
+ * Command handler for the breeding process.
+ */
 public class PokeBreed {
   // Schedules when players are out of cooldown.
   public static ScheduledThreadPoolExecutor scheduler;
@@ -51,18 +54,27 @@ public class PokeBreed {
   // Used to generate random numbers in functions.
   Random RNG = new Random();
 
+
+  /**
+   * Registers the command with the command dispatcher.
+   * 
+   * @param dispatcher - the command dispatcher.
+   */
   public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
     // Set up command.
     dispatcher.register(
             literal("pokebreed")
-                    .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src, VeryScuffedCobblemonBreeding.permissions.POKEBREED_PERMISSION))
+                    .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src,
+                    VeryScuffedCobblemonBreeding.permissions.POKEBREED_PERMISSION))
                     .executes(this::execute)
     );
     dispatcher.register(
             literal("pokebreed")
-                    .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src, VeryScuffedCobblemonBreeding.permissions.VIP_POKEBREED_PERMISSION))
+                    .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src,
+                    VeryScuffedCobblemonBreeding.permissions.VIP_POKEBREED_PERMISSION))
                     .executes(this::execute)
     );
+
     // Set up scheduler.
     scheduler = new ScheduledThreadPoolExecutor(1, r -> {
       Thread thread = Executors.defaultThreadFactory().newThread(r);
@@ -73,7 +85,12 @@ public class PokeBreed {
     scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
   }
 
-  // PokeBreed command executed.
+
+  /**
+   * What to do when the PokeBreed command is executed.
+   * 
+   * @param ctx - the command context.
+   */
   private int execute(CommandContext<ServerCommandSource> ctx) {
     if (ctx.getSource().getPlayer() != null) {
       ServerPlayerEntity player = ctx.getSource().getPlayer();
@@ -96,7 +113,8 @@ public class PokeBreed {
           // User is a VIP.
           if (isVIP) {
             // Cooldown was supposed to be over!
-            if (timeSince > 1000L * 60 * VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES) {
+            if (timeSince > 1000L * 60
+                * VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES) {
               breedSessions.remove(player.getUuid());
             }
           } else {
@@ -116,12 +134,15 @@ public class PokeBreed {
         long cooldownDuration = (System.currentTimeMillis() - breedSession.timeBred) / 1000;
         // Total cooldown time - time since = time left.
         if (isVIP) {
-          cooldownDuration = (VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
+          cooldownDuration = (VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES
+                              * 60L) - cooldownDuration;
         } else {
-          cooldownDuration = (VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES * 60L) - cooldownDuration;
+          cooldownDuration = (VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES
+                              * 60L) - cooldownDuration;
         }
 
-        Text toSend = Text.literal("Breed cooldown: " + cooldownDuration + " seconds.").formatted(Formatting.RED);
+        Text toSend = Text.literal("Breed cooldown: " + cooldownDuration + " seconds.")
+                          .formatted(Formatting.RED);
         player.sendMessage(toSend);
 
         return -1;
@@ -136,6 +157,11 @@ public class PokeBreed {
     return 1;
   }
 
+
+  /**
+   * A breeding session with all of the necessary
+   * information and tools to breed.
+   */
   public class BreedSession {
     // Breeder information.
     public ServerPlayerEntity breeder;
@@ -162,25 +188,45 @@ public class PokeBreed {
       put("Power Weight", Stats.HP);
     }};
 
-    // Constructor
+
+    /**
+     * Constructor: set default value and obtain user information.
+     * 
+     * @param breeder - the player that is breeding their Cobblemons.
+     */
     public BreedSession(ServerPlayerEntity breeder) {
       this.breeder = breeder;
       this.breederUUID = breeder.getUuid();
       this.timeBred = 0;
     }
 
+
+    /**
+     * Breeding was cancelled for some reason.
+     * Display message and remove from session list.
+     * 
+     * @param msg - the message to tell the user; contains the reason for breed cancellation.
+     */
     public void cancel(String msg) {
       breeder.sendMessage(Text.literal("Breed cancelled: " + msg).formatted(Formatting.RED));
       breedSessions.remove(breederUUID);
       this.cancelled = true;
     }
 
+
+    /**
+     * Start the breeding process.
+     */
     public void start() {
       // Give player GUI.
       PokeBreedHandlerFactory breedHandler = new PokeBreedHandlerFactory(this);
       breeder.openHandledScreen(breedHandler);
     }
 
+
+    /**
+     * Breed 2 Cobblemons together.
+     */
     public void doBreed() {
       // Breed cancelled, why are we still doing the breed?
       if (this.cancelled) {
@@ -232,6 +278,11 @@ public class PokeBreed {
     }
 
 
+    /** 
+     * Checks whether the breeding combination is valid or not.
+     * 
+     * @return boolean - whether the breeding combination is valid or not.
+     */
     public boolean checkBreed() {
       // Get Pokemon attributes.
       String pokemon1Gender = String.valueOf(breederPokemon1.getGender());
@@ -252,7 +303,8 @@ public class PokeBreed {
         return false;
       }
       // Any are part of the Undiscovered egg group.
-      if (pokemon1EggGroup.contains(EggGroup.UNDISCOVERED) || pokemon2EggGroup.contains(EggGroup.UNDISCOVERED)) {
+      if (pokemon1EggGroup.contains(EggGroup.UNDISCOVERED)
+          || pokemon2EggGroup.contains(EggGroup.UNDISCOVERED)) {
         // In undiscovered egg group.
         cancel("Cannot breed with Undiscovered egg group.");
         return false;
@@ -293,6 +345,13 @@ public class PokeBreed {
     }
 
 
+    /**
+     * Breeds the Cobblemons and gets the baby.
+     * The baby will have default values and inherit some things
+     * from the parent.
+     * 
+     * @return Pokemon - the baby that was bred.
+     */
     public Pokemon getPokemonBred() {
       Pokemon baby;
 
@@ -358,6 +417,12 @@ public class PokeBreed {
     }
 
 
+    /**
+     * Retrieves a random gender based on the male ratio for that Cobblemon.
+     * 
+     * @param getFor - the Cobblemon to get the gender for.
+     * @return Gender - the randomly chosen gender.
+     */
     public Gender getRandomGender(Pokemon getFor) {
       int maleRatio = (int) (getFor.getForm().getMaleRatio() * 100);
       int genderRNG = RNG.nextInt(101);
@@ -374,6 +439,12 @@ public class PokeBreed {
     }
 
 
+    /**
+     * Checks whether the Cobblemon has a hidden ability or not.
+     * 
+     * @param toCheck - the Cobblemon to check.
+     * @return boolean - whether the Cobblemon has a hidden ability or not.
+     */
     public boolean hasHiddenAbility(Pokemon toCheck) {
       List<AbilityTemplate> possibleHiddens = new ArrayList<>();
 
@@ -388,6 +459,13 @@ public class PokeBreed {
     }
 
 
+    /**
+     * Gets a random ability for a Cobblemon.
+     * Supports hidden abilities.
+     * 
+     * @param getFor - the Cobblemon to get a random ability for.
+     * @return Ability - the ability that was chosen randomly.
+     */
     public Ability getRandomAbility(Pokemon getFor) {
       // Priority.LOWEST = common ability, Priority.LOW = hidden ability.
       // Get all possible abilities for Pokemon.
@@ -434,6 +512,12 @@ public class PokeBreed {
     }
 
 
+    /**
+     * Gets IVs for the baby.
+     * IVs will be randomly inherited from parents or randomized.
+     * 
+     * @return IVs - the baby's new IVs.
+     */
     public IVs getIVs() {
       List<Stats> toSet = new ArrayList<>();
       toSet.add(Stats.SPEED);
@@ -526,6 +610,11 @@ public class PokeBreed {
     }
 
 
+    /**
+     * Gets a random nature.
+     * 
+     * @return Nature - the random nature.
+     */
     public Nature getRandomNature() {
       // Get parents' items' NBT.
       NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();

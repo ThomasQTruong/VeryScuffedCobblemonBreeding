@@ -27,6 +27,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Handles the PokeBreed GUI.
+ */
 public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
   private PokeBreed.BreedSession breedSession;
   private int boxNumber = 0;
@@ -34,12 +37,23 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
           15, 20, 25,
           50, 100, 200};
 
-  // Default constructor.
+
+  /**
+   * Default constructor; copies over breedSession.
+   * 
+   * @param breedSession - the breed session to copy.
+   */
   public PokeBreedHandlerFactory(PokeBreed.BreedSession breedSession) {
     this.breedSession = breedSession;
   }
 
-  // Constructor for next/previous page.
+
+  /**
+   * Constructor for next/previous page.
+   * 
+   * @param breedSession - the breed session to copy over.
+   * @param boxNumber - the current box number to display.
+   */ 
   public PokeBreedHandlerFactory(PokeBreed.BreedSession breedSession, int boxNumber) {
     this.breedSession = breedSession;
     // Negative, figure out the actual page number.
@@ -52,29 +66,50 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     this.boxNumber = boxNumber % breedSession.maxPCSize;
   }
 
-  // Get GUI name.
+  /**
+   * Get display name for the GUI.
+   */
   @Override
   public Text getDisplayName() {
     return Text.of("Breed: PC Box " + (boxNumber + 1));
   }
 
-  // Get sizes.
-  int rows() {
+  
+  /**
+   * Gets the number of rows in the GUI.
+   * 
+   * @return int - the number of rows.
+   */
+  public int rows() {
     return 6;
   }
 
-  int size() {
+
+  /**
+   * Gets the number of slots in the GUI.
+   * 
+   * @return int - the number of slots.
+   */
+  public int size() {
     return rows() * 9;
   }
 
+  
+  /**
+   * Updates the user's GUI inventory.
+   * 
+   * @param inventory - the PokeBreed GUI.
+   */
   public void updateInventory(SimpleInventory inventory) {
     ItemStack emptyPokemon = new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE);
 
     // For index 15-17, set as blank.
     for (int i = 15; i <= 17; ++i) {
       // Set as gray glass.
-      inventory.setStack(i, new ItemStack(Items.GRAY_STAINED_GLASS_PANE).setCustomName(Text.of(" ")));
+      inventory.setStack(i, new ItemStack(Items.GRAY_STAINED_GLASS_PANE)
+               .setCustomName(Text.of(" ")));
     }
+
     // Breeding choices.
     inventory.setStack(6, emptyPokemon.setCustomName(Text.of("To Breed #1")));
     if (breedSession.breederPokemon1 != null) {
@@ -85,10 +120,15 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     if (breedSession.breederPokemon2 != null) {
       inventory.setStack(8, PokemonUtility.pokemonToItem(breedSession.breederPokemon2));
     }
+
     // Buttons
-    inventory.setStack(size() - 1, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(Text.literal("Next Box")).build());
-    inventory.setStack(size() - 2, new ItemStack(Items.GRAY_DYE).setCustomName(Text.literal("Click to Breed")));
-    inventory.setStack(size() - 3, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(Text.literal("Previous Box")).build());
+    inventory.setStack(size() - 1, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
+                                           Text.literal("Next Box")).build());
+    inventory.setStack(size() - 2, new ItemStack(Items.GRAY_DYE).setCustomName(
+                                           Text.literal("Click to Breed")));
+    inventory.setStack(size() - 3, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
+                                           Text.literal("Previous Box")).build());
+
     // Settings
     int pageIndex = 0;
     for (int i = 24; i <= 42; i += 9) {
@@ -106,7 +146,15 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     }
   }
 
-  // Create GUI.
+
+  /**
+   * Create PokeBreed GUI.
+   * 
+   * @param syncId - the ID used to sync (?).
+   * @param inv - the player's inventory.
+   * @param player - the player themselves.
+   * @return ScreenHandler - the created PokeBreed GUI.
+   */
   @Nullable
   @Override
   public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
@@ -140,9 +188,10 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         item.setSubNbt("slot", slotNbt);
         inventory.setStack(i, item);
       } else {
-        // Doesn't exist.
+      // Doesn't exist.
         // Put a red stained glass instead.
-        inventory.setStack(i, new ItemStack(Items.RED_STAINED_GLASS_PANE).setCustomName(Text.literal("Empty").formatted(Formatting.GRAY)));
+        inventory.setStack(i, new ItemStack(Items.RED_STAINED_GLASS_PANE).setCustomName(
+                                      Text.literal("Empty").formatted(Formatting.GRAY)));
       }
     }
 
@@ -161,17 +210,31 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         item.setSubNbt("slot", slotNbt);
         inventory.setStack((int) (row * 9) + index, item);
       } else {
-        inventory.setStack((int) (row * 9) + index, new ItemStack(Items.RED_STAINED_GLASS_PANE).setCustomName(Text.literal("Empty").formatted(Formatting.GRAY)));
+        inventory.setStack((int) (row * 9) + index, new ItemStack(Items.RED_STAINED_GLASS_PANE)
+                                                            .setCustomName(Text.literal("Empty")
+                                                            .formatted(Formatting.GRAY)));
       }
     }
     PlayerPartyStore finalBreederParty = breederParty;
 
-    return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6, syncId, inv, inventory, rows()) {
+    // Returns the GUI.
+    return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6,
+        syncId, inv, inventory, rows()) {
+      
+      /**
+       * When a slot is clicked in the GUI.
+       * 
+       * @param slotIndex - the index of the clicked slot.
+       * @param button - the button clicked (?).
+       * @param actionType - the type of action (?).
+       */
       @Override
-      public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+      public void onSlotClick(int slotIndex, int button, SlotActionType actionType,
+          PlayerEntity player) {
         // If player cancels.
         if (breedSession.cancelled) {
-          player.sendMessage(Text.literal("Breeding has been cancelled.").formatted(Formatting.RED));
+          player.sendMessage(Text.literal("Breeding has been cancelled.")
+                                 .formatted(Formatting.RED));
           player.closeHandledScreen();
         }
 
@@ -249,20 +312,48 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         updateInventory(inventory);
       }
 
+
+      /**
+       * Disable transferring between slots.
+       * 
+       * @param player - the player that clicked the slot.
+       * @param index - the clicked slot's index.
+       * @return ItemStack - the item at the.
+       */
       @Override
       public ItemStack transferSlot(PlayerEntity player, int index) {
         return null;
       }
 
+
+      /**
+       * Disable insertion in the slots (return false always).
+       * 
+       * @param slot - the slot that was inserted to.
+       * @param boolean - whether it can be inserted into.
+       */
       @Override
       public boolean canInsertIntoSlot(Slot slot) {
         return false;
       }
 
+
+      /**
+       * Disable dropping items from inventory.
+       * 
+       * @param player - the player that tried to drop.
+       * @param inventory - the PokeBreed GUI.
+       */
       @Override
       protected void dropInventory(PlayerEntity player, Inventory inventory) {
       }
 
+
+      /**
+       * Action: when player closes PokeBreed GUI, cancel breeding.
+       * 
+       * @param player - the player that was trying to breed Cobblemons.
+       */
       @Override
       public void close(PlayerEntity player) {
         // GUI closed AND it wasn't to change page (player closed).
