@@ -27,7 +27,9 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
         - 60% chance to pass down if either parents have a hidden ability.
 
 ## Download
-[Releases](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases)
+[Github](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases)
+[Modrinth](https://modrinth.com/mod/veryscuffedcobblemonbreeding)
+[CursedForge](https://curseforge.com/minecraft/mc-mods/veryscuffedcobblemonbreeding/)
 
 ## How to use:
 1. Open up the breeding GUI.
