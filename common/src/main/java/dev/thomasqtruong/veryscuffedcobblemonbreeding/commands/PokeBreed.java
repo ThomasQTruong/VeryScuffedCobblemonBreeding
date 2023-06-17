@@ -32,10 +32,10 @@ import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -289,8 +289,8 @@ public class PokeBreed {
       String pokemon2Gender = String.valueOf(breederPokemon2.getGender());
       String pokemon1Species = String.valueOf(breederPokemon1.getSpecies());
       String pokemon2Species = String.valueOf(breederPokemon2.getSpecies());
-      HashSet<EggGroup> pokemon1EggGroup = breederPokemon1.getSpecies().getEggGroups();
-      HashSet<EggGroup> pokemon2EggGroup = breederPokemon2.getSpecies().getEggGroups();
+      Set<EggGroup> pokemon1EggGroup = breederPokemon1.getForm().getEggGroups();
+      Set<EggGroup> pokemon2EggGroup = breederPokemon2.getForm().getEggGroups();
 
       // Cannot breed same genders (unless genderless + ditto).
       if (pokemon1Gender.equals(pokemon2Gender) && !pokemon1Gender.equals("GENDERLESS")) {
