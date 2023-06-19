@@ -188,7 +188,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         item.setSubNbt("slot", slotNbt);
         inventory.setStack(i, item);
       } else {
-        // Doesn't exist.
+      // Doesn't exist.
         // Put a red stained glass instead.
         inventory.setStack(i, new ItemStack(Items.RED_STAINED_GLASS_PANE).setCustomName(
                 Text.literal("Empty").formatted(Formatting.GRAY)));
