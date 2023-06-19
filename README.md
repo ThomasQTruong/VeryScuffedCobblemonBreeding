@@ -1,4 +1,4 @@
-# Very Scuffed Cobblemon Breeding
+# Very Scuffed Cobblemon Breeding (Mod)
 My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - This is my first ever mod! :)
 - It is an instant breeding system with a 5 minute default cooldown.
@@ -27,14 +27,16 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
         - 60% chance to pass down if either parents have a hidden ability.
 
 ## Download
-[Github](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases)
-[Modrinth](https://modrinth.com/mod/veryscuffedcobblemonbreeding)
-[CursedForge](https://curseforge.com/minecraft/mc-mods/veryscuffedcobblemonbreeding/)
+- [Github](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases)
+- [Modrinth](https://modrinth.com/mod/veryscuffedcobblemonbreeding)
+- [CursedForge](https://curseforge.com/minecraft/mc-mods/veryscuffedcobblemonbreeding/)
 
 ## How to use:
 1. Open up the breeding GUI.
     - Command: /pokebreed
     - ![image](https://user-images.githubusercontent.com/58405482/232265114-48c663b1-8966-4f62-8911-6519d7d2cc9e.png)
+    - No perms mod/plugin?
+         - Check out the configs section under.
 2. Select two Cobblemons to breed.
     - ![image](https://user-images.githubusercontent.com/58405482/232265199-6c2311e6-e348-41be-a984-3d6a79b6dc5d.png)
     - Next/Previous box is at the bottom right.
@@ -47,7 +49,7 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 
 ## Getting breeding items:
 - Only obtainable via commands.
-  - Mainly dedicated for servers to sell these special items.
+    - Mainly dedicated for servers to sell these special items.
 - Can change the item to whatever you want.
     - The only thing that matters is the **breedItem** NBT attribute.
 - Use commands to get breeding items:
@@ -62,8 +64,9 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 
 ## Configs
 ### Permissions
-- command.pokebreed - default for MC is level 2.
-- command.vippokebreed - permission for to get VIP cooldown.
+- command.pokebreed - default is level 2.
+  - 0 = anyone can use it.
+- command.vippokebreed - permission level to get VIP cooldown.
 ### Cooldowns
 - command.pokebreed.cooldown - default is 5 minutes.
 - command.pokebreed.vipcooldown - default is 3 minutes.

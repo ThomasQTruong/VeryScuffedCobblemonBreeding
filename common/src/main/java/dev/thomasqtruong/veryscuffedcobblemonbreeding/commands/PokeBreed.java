@@ -65,13 +65,13 @@ public class PokeBreed {
     dispatcher.register(
             literal("pokebreed")
                     .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src,
-                    VeryScuffedCobblemonBreeding.permissions.POKEBREED_PERMISSION))
+                            VeryScuffedCobblemonBreeding.permissions.POKEBREED_PERMISSION))
                     .executes(this::execute)
     );
     dispatcher.register(
             literal("pokebreed")
                     .requires(src -> VeryScuffedCobblemonBreedingPermissions.checkPermission(src,
-                    VeryScuffedCobblemonBreeding.permissions.VIP_POKEBREED_PERMISSION))
+                            VeryScuffedCobblemonBreeding.permissions.VIP_POKEBREED_PERMISSION))
                     .executes(this::execute)
     );
 
@@ -88,7 +88,7 @@ public class PokeBreed {
 
   /**
    * What to do when the PokeBreed command is executed.
-   * 
+   *
    * @param ctx - the command context.
    */
   private int execute(CommandContext<ServerCommandSource> ctx) {
@@ -114,7 +114,7 @@ public class PokeBreed {
           if (isVIP) {
             // Cooldown was supposed to be over!
             if (timeSince > 1000L * 60
-                * VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES) {
+                    * VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES) {
               breedSessions.remove(player.getUuid());
             }
           } else {
@@ -135,14 +135,14 @@ public class PokeBreed {
         // Total cooldown time - time since = time left.
         if (isVIP) {
           cooldownDuration = (VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES
-                              * 60L) - cooldownDuration;
+                  * 60L) - cooldownDuration;
         } else {
           cooldownDuration = (VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES
-                              * 60L) - cooldownDuration;
+                  * 60L) - cooldownDuration;
         }
 
         Text toSend = Text.literal("Breed cooldown: " + cooldownDuration + " seconds.")
-                          .formatted(Formatting.RED);
+                .formatted(Formatting.RED);
         player.sendMessage(toSend);
 
         return -1;
@@ -191,7 +191,7 @@ public class PokeBreed {
 
     /**
      * Constructor: set default value and obtain user information.
-     * 
+     *
      * @param breeder - the player that is breeding their Cobblemons.
      */
     public BreedSession(ServerPlayerEntity breeder) {
@@ -204,7 +204,7 @@ public class PokeBreed {
     /**
      * Breeding was cancelled for some reason.
      * Display message and remove from session list.
-     * 
+     *
      * @param msg - the message to tell the user; contains the reason for breed cancellation.
      */
     public void cancel(String msg) {
@@ -266,7 +266,7 @@ public class PokeBreed {
             breedSessions.remove(breederUUID);
           }, VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
         } else {
-        // Player does not have VIP status.
+          // Player does not have VIP status.
           scheduler.schedule(() -> {
             breedSessions.remove(breederUUID);
           }, VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
@@ -278,9 +278,9 @@ public class PokeBreed {
     }
 
 
-    /** 
+    /**
      * Checks whether the breeding combination is valid or not.
-     * 
+     *
      * @return boolean - whether the breeding combination is valid or not.
      */
     public boolean checkBreed() {
@@ -304,7 +304,7 @@ public class PokeBreed {
       }
       // Any are part of the Undiscovered egg group.
       if (pokemon1EggGroup.contains(EggGroup.UNDISCOVERED)
-          || pokemon2EggGroup.contains(EggGroup.UNDISCOVERED)) {
+              || pokemon2EggGroup.contains(EggGroup.UNDISCOVERED)) {
         // In undiscovered egg group.
         cancel("Cannot breed with Undiscovered egg group.");
         return false;
@@ -349,7 +349,7 @@ public class PokeBreed {
      * Breeds the Cobblemons and gets the baby.
      * The baby will have default values and inherit some things
      * from the parent.
-     * 
+     *
      * @return Pokemon - the baby that was bred.
      */
     public Pokemon getPokemonBred() {
@@ -361,16 +361,16 @@ public class PokeBreed {
         if (!String.valueOf(breederPokemon1.getSpecies()).equals("ditto")) {
           baby = breederPokemon1.clone(true, true);
         } else {
-        // Pokemon 2 is not ditto.
+          // Pokemon 2 is not ditto.
           baby = breederPokemon2.clone(true, true);
         }
       } else {
-      // Same egg group breeding.
+        // Same egg group breeding.
         // Pokemon1 is the mother, offspring = same species as mother.
         if (breederPokemon1.getGender() == Gender.FEMALE) {
           baby = breederPokemon1.clone(true, true);
         } else {
-        // Pokemon2 is the mother.
+          // Pokemon2 is the mother.
           baby = breederPokemon2.clone(true, true);
         }
       }
@@ -380,7 +380,7 @@ public class PokeBreed {
         Species preEvolution = baby.getPreEvolution().getSpecies();
         baby.setSpecies(preEvolution);
       }
-      
+
       // SPECIAL CASE: manaphy -> phione.
       if (String.valueOf(baby.getSpecies()).equals("manaphy")) {
         baby.setSpecies(Objects.requireNonNull(PokemonSpecies.INSTANCE.getByName("phione")));
@@ -419,7 +419,7 @@ public class PokeBreed {
 
     /**
      * Retrieves a random gender based on the male ratio for that Cobblemon.
-     * 
+     *
      * @param getFor - the Cobblemon to get the gender for.
      * @return Gender - the randomly chosen gender.
      */
@@ -441,7 +441,7 @@ public class PokeBreed {
 
     /**
      * Checks whether the Cobblemon has a hidden ability or not.
-     * 
+     *
      * @param toCheck - the Cobblemon to check.
      * @return boolean - whether the Cobblemon has a hidden ability or not.
      */
@@ -462,7 +462,7 @@ public class PokeBreed {
     /**
      * Gets a random ability for a Cobblemon.
      * Supports hidden abilities.
-     * 
+     *
      * @param getFor - the Cobblemon to get a random ability for.
      * @return Ability - the ability that was chosen randomly.
      */
@@ -482,7 +482,7 @@ public class PokeBreed {
         if (potentialAbility.getPriority() == Priority.LOW) {
           possibleHiddens.add(potentialAbility.getTemplate());
         } else if (potentialAbility.getPriority() == Priority.LOWEST) {
-        // Is a common ability.
+          // Is a common ability.
           possibleCommons.add(potentialAbility.getTemplate());
         }
       }
@@ -515,7 +515,7 @@ public class PokeBreed {
     /**
      * Gets IVs for the baby.
      * IVs will be randomly inherited from parents or randomized.
-     * 
+     *
      * @return IVs - the baby's new IVs.
      */
     public IVs getIVs() {
@@ -564,7 +564,7 @@ public class PokeBreed {
       if (powerItemsCount == 2) {
         intRNG = RNG.nextInt(2);  // Choose a random parent's IV.
       } else if (powerItemsCount == 1) {
-      // Only one parent has a power item.
+        // Only one parent has a power item.
         // Parent 2 has the item.
         if (powerItemsMap.containsKey(parent2Item)) {
           intRNG = 1;
@@ -578,7 +578,7 @@ public class PokeBreed {
         --amountOfIVsToGet;
         toSet.remove(powerItemsMap.get(parent1Item));
       } else if (powerItemsCount > 0) {
-      // Get IV from parent2 if holding power item.
+        // Get IV from parent2 if holding power item.
         Stats stat = powerItemsMap.get(parent2Item);
         newIVs.set(stat, breederPokemon2.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
@@ -595,7 +595,7 @@ public class PokeBreed {
         if (randomParent == 0) {
           newIVs.set(stat, breederPokemon1.getIvs().getOrDefault(stat));
         } else {
-        // Parent 2's stat gets inherited.
+          // Parent 2's stat gets inherited.
           newIVs.set(stat, breederPokemon2.getIvs().getOrDefault(stat));
         }
         toSet.remove(statIndex);
@@ -612,7 +612,7 @@ public class PokeBreed {
 
     /**
      * Gets a random nature.
-     * 
+     *
      * @return Nature - the random nature.
      */
     public Nature getRandomNature() {

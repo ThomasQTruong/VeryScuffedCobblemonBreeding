@@ -40,7 +40,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
   /**
    * Default constructor; copies over breedSession.
-   * 
+   *
    * @param breedSession - the breed session to copy.
    */
   public PokeBreedHandlerFactory(PokeBreed.BreedSession breedSession) {
@@ -50,10 +50,10 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
   /**
    * Constructor for next/previous page.
-   * 
+   *
    * @param breedSession - the breed session to copy over.
    * @param boxNumber - the current box number to display.
-   */ 
+   */
   public PokeBreedHandlerFactory(PokeBreed.BreedSession breedSession, int boxNumber) {
     this.breedSession = breedSession;
     // Negative, figure out the actual page number.
@@ -74,10 +74,10 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     return Text.of("Breed: PC Box " + (boxNumber + 1));
   }
 
-  
+
   /**
    * Gets the number of rows in the GUI.
-   * 
+   *
    * @return int - the number of rows.
    */
   public int rows() {
@@ -87,17 +87,17 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
   /**
    * Gets the number of slots in the GUI.
-   * 
+   *
    * @return int - the number of slots.
    */
   public int size() {
     return rows() * 9;
   }
 
-  
+
   /**
    * Updates the user's GUI inventory.
-   * 
+   *
    * @param inventory - the PokeBreed GUI.
    */
   public void updateInventory(SimpleInventory inventory) {
@@ -107,7 +107,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
     for (int i = 15; i <= 17; ++i) {
       // Set as gray glass.
       inventory.setStack(i, new ItemStack(Items.GRAY_STAINED_GLASS_PANE)
-               .setCustomName(Text.of(" ")));
+              .setCustomName(Text.of(" ")));
     }
 
     // Breeding choices.
@@ -123,11 +123,11 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
     // Buttons
     inventory.setStack(size() - 1, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
-                                           Text.literal("Next Box")).build());
+            Text.literal("Next Box")).build());
     inventory.setStack(size() - 2, new ItemStack(Items.GRAY_DYE).setCustomName(
-                                           Text.literal("Click to Breed")));
+            Text.literal("Click to Breed")));
     inventory.setStack(size() - 3, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
-                                           Text.literal("Previous Box")).build());
+            Text.literal("Previous Box")).build());
 
     // Settings
     int pageIndex = 0;
@@ -149,7 +149,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
   /**
    * Create PokeBreed GUI.
-   * 
+   *
    * @param syncId - the ID used to sync (?).
    * @param inv - the player's inventory.
    * @param player - the player themselves.
@@ -191,7 +191,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
       // Doesn't exist.
         // Put a red stained glass instead.
         inventory.setStack(i, new ItemStack(Items.RED_STAINED_GLASS_PANE).setCustomName(
-                                      Text.literal("Empty").formatted(Formatting.GRAY)));
+                Text.literal("Empty").formatted(Formatting.GRAY)));
       }
     }
 
@@ -211,30 +211,30 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         inventory.setStack((int) (row * 9) + index, item);
       } else {
         inventory.setStack((int) (row * 9) + index, new ItemStack(Items.RED_STAINED_GLASS_PANE)
-                                                            .setCustomName(Text.literal("Empty")
-                                                            .formatted(Formatting.GRAY)));
+                .setCustomName(Text.literal("Empty")
+                        .formatted(Formatting.GRAY)));
       }
     }
     PlayerPartyStore finalBreederParty = breederParty;
 
     // Returns the GUI.
     return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6,
-        syncId, inv, inventory, rows()) {
-      
+            syncId, inv, inventory, rows()) {
+
       /**
        * When a slot is clicked in the GUI.
-       * 
+       *
        * @param slotIndex - the index of the clicked slot.
        * @param button - the button clicked (?).
        * @param actionType - the type of action (?).
        */
       @Override
       public void onSlotClick(int slotIndex, int button, SlotActionType actionType,
-          PlayerEntity player) {
+                              PlayerEntity player) {
         // If player cancels.
         if (breedSession.cancelled) {
           player.sendMessage(Text.literal("Breeding has been cancelled.")
-                                 .formatted(Formatting.RED));
+                  .formatted(Formatting.RED));
           player.closeHandledScreen();
         }
 
@@ -255,24 +255,24 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
         } else if (slotIndex == 8) {
           breedSession.breederPokemon2 = null;
         } else if ((slotIndex >= 24 && slotIndex <= 26) ||
-                   (slotIndex >= 33 && slotIndex <= 35) ||
-                   (slotIndex >= 42 && slotIndex <= 44)) {
-        // Clicked a page change setting.
+                (slotIndex >= 33 && slotIndex <= 35) ||
+                (slotIndex >= 42 && slotIndex <= 44)) {
+          // Clicked a page change setting.
           breedSession.pageChangeSetting = pageSettings[(slotIndex % 9 - 6) + (slotIndex / 9 - 2) * 3];
         } else if (slotIndex == size() - 1) {
-        // Clicked next page.
+          // Clicked next page.
           // Indicate that the old GUI closing is a page change, not cancel.
           breedSession.changePage = true;
           player.openHandledScreen(new PokeBreedHandlerFactory(breedSession,
-                                   boxNumber + breedSession.pageChangeSetting));
+                  boxNumber + breedSession.pageChangeSetting));
           // Back to default value.
           breedSession.changePage = false;
         } else if (slotIndex == size() - 3) {
-        // Clicked previous page.
+          // Clicked previous page.
           // Indicate that the old GUI closing is a page change, not cancel.
           breedSession.changePage = true;
           player.openHandledScreen(new PokeBreedHandlerFactory(breedSession,
-                                   boxNumber - breedSession.pageChangeSetting));
+                  boxNumber - breedSession.pageChangeSetting));
           // Back to default value.
           breedSession.changePage = false;
         } else {
@@ -315,7 +315,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
       /**
        * Disable transferring between slots.
-       * 
+       *
        * @param player - the player that clicked the slot.
        * @param index - the clicked slot's index.
        * @return ItemStack - the item at the.
@@ -328,9 +328,9 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
       /**
        * Disable insertion in the slots (return false always).
-       * 
+       *
        * @param slot - the slot that was inserted to.
-       * @param boolean - whether it can be inserted into.
+       * @return boolean - whether it can be inserted into.
        */
       @Override
       public boolean canInsertIntoSlot(Slot slot) {
@@ -340,7 +340,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
       /**
        * Disable dropping items from inventory.
-       * 
+       *
        * @param player - the player that tried to drop.
        * @param inventory - the PokeBreed GUI.
        */
@@ -351,7 +351,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
       /**
        * Action: when player closes PokeBreed GUI, cancel breeding.
-       * 
+       *
        * @param player - the player that was trying to breed Cobblemons.
        */
       @Override
