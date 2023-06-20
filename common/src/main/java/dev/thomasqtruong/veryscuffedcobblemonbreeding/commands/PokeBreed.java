@@ -601,9 +601,9 @@ public class PokeBreed {
         toSet.remove(statIndex);
       }
 
-      // Get the rest of the stats.
+      // Get the rest of the stats (0-31).
       for (Stats stat : toSet) {
-        newIVs.set(stat, RNG.nextInt(31));
+        newIVs.set(stat, RNG.nextInt(32));
       }
 
       return newIVs;
