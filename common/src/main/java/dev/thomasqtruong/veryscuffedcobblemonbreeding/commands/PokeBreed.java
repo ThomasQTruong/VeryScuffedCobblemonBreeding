@@ -387,7 +387,7 @@ public class PokeBreed {
       }
 
       // Got the Pokemon, time to set its proper default.
-      baby.setEvs(new EVs());
+      setEVs(baby, 0);
       baby.setExperienceAndUpdateLevel(0);
       baby.removeHeldItem();
       baby.initializeMoveset(true);
@@ -410,7 +410,7 @@ public class PokeBreed {
 
       baby.setGender(getRandomGender(baby));
       baby.setAbility(getRandomAbility(baby));
-      baby.setIvs(getIVs());
+      inheritIVs(baby);
       baby.setNature(getRandomNature());
 
       return baby;
@@ -513,12 +513,25 @@ public class PokeBreed {
 
 
     /**
-     * Gets IVs for the baby.
-     * IVs will be randomly inherited from parents or randomized.
+     * Sets the pokemon's EVs into a value.
      *
-     * @return IVs - the baby's new IVs.
+     * @param value - the value to change every EV to.
      */
-    public IVs getIVs() {
+    public void setEVs(Pokemon pokemon, int value) {
+      pokemon.setEV(Stats.SPEED, value);
+      pokemon.setEV(Stats.SPECIAL_DEFENCE, value);
+      pokemon.setEV(Stats.DEFENCE, value);
+      pokemon.setEV(Stats.ATTACK, value);
+      pokemon.setEV(Stats.SPECIAL_ATTACK, value);
+      pokemon.setEV(Stats.HP, value);
+    }
+
+
+    /**
+     * Inherits IVs for the baby.
+     * IVs will be randomly inherited from parents or randomized.
+     */
+    public void inheritIVs(Pokemon baby) {
       List<Stats> toSet = new ArrayList<>();
       toSet.add(Stats.SPEED);
       toSet.add(Stats.SPECIAL_DEFENCE);
@@ -526,8 +539,6 @@ public class PokeBreed {
       toSet.add(Stats.ATTACK);
       toSet.add(Stats.SPECIAL_ATTACK);
       toSet.add(Stats.HP);
-
-      IVs newIVs = new IVs();
 
       // Get parents' items' NBT.
       NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();
@@ -574,13 +585,13 @@ public class PokeBreed {
       // Get IV from parent1 if holding power item.
       if (powerItemsCount > 0 && intRNG == 0) {
         Stats stat = powerItemsMap.get(parent1Item);
-        newIVs.set(stat, breederPokemon1.getIvs().getOrDefault(stat));
+        baby.setIV(stat, breederPokemon1.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
         toSet.remove(powerItemsMap.get(parent1Item));
       } else if (powerItemsCount > 0) {
         // Get IV from parent2 if holding power item.
         Stats stat = powerItemsMap.get(parent2Item);
-        newIVs.set(stat, breederPokemon2.getIvs().getOrDefault(stat));
+        baby.setIV(stat, breederPokemon2.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
         toSet.remove(powerItemsMap.get(parent2Item));
       }
@@ -593,20 +604,18 @@ public class PokeBreed {
 
         // Parent 1's stat gets inherited.
         if (randomParent == 0) {
-          newIVs.set(stat, breederPokemon1.getIvs().getOrDefault(stat));
+          baby.setIV(stat, breederPokemon1.getIvs().getOrDefault(stat));
         } else {
           // Parent 2's stat gets inherited.
-          newIVs.set(stat, breederPokemon2.getIvs().getOrDefault(stat));
+          baby.setIV(stat, breederPokemon2.getIvs().getOrDefault(stat));
         }
         toSet.remove(statIndex);
       }
 
       // Get the rest of the stats (0-31).
       for (Stats stat : toSet) {
-        newIVs.set(stat, RNG.nextInt(32));
+        baby.setIV(stat, RNG.nextInt(32));
       }
-
-      return newIVs;
     }
 
 

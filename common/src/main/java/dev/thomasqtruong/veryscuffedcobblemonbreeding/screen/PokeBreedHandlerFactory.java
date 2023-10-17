@@ -321,7 +321,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
        * @return ItemStack - the item at the.
        */
       @Override
-      public ItemStack transferSlot(PlayerEntity player, int index) {
+      public ItemStack quickMove(PlayerEntity player, int index) {
         return null;
       }
 
@@ -355,7 +355,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
        * @param player - the player that was trying to breed Cobblemons.
        */
       @Override
-      public void close(PlayerEntity player) {
+      public void onClosed(PlayerEntity player) {
         // GUI closed AND it wasn't to change page (player closed).
         if (!breedSession.cancelled && !breedSession.changePage) {
           // Cancel session.
