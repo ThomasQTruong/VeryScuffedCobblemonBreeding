@@ -32,7 +32,7 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - [CursedForge](https://curseforge.com/minecraft/mc-mods/veryscuffedcobblemonbreeding/)
 
 ## Dependencies
-- [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-api)
+- Architectury: [Modrinth](https://modrinth.com/mod/architectury-api) | [CurseForge](https://www.curseforge.com/minecraft/mc-mods/architectury-api)
 
 ## How to use:
 1. Open up the breeding GUI.
