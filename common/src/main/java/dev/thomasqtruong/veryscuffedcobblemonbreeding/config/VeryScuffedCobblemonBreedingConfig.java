@@ -23,6 +23,8 @@ public class VeryScuffedCobblemonBreedingConfig {
     public static int COOLDOWN_IN_MINUTES = 5;      // Default: 5 minutes cooldown.
     public static int VIP_COOLDOWN_IN_MINUTES = 3;  // VIP breeding cooldown, default: 3.
 
+    public static int DITTO_BREEDING = 1;  // Whether breeding with a ditto is allowed or not, default: 1 (true).
+
     public VeryScuffedCobblemonBreedingConfig() {
         init();
     }
@@ -52,6 +54,11 @@ public class VeryScuffedCobblemonBreedingConfig {
             HashMap<String, Integer> cooldownsMap = GSON.fromJson(cooldowns, type);
             COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.cooldown", 5);
             VIP_COOLDOWN_IN_MINUTES = cooldownsMap.getOrDefault("command.pokebreed.vipcooldown", 3);
+
+            JsonObject otherFeatures = obj.get("otherFeatures").getAsJsonObject();
+            HashMap<String, Integer> otherFeaturesMap = GSON.fromJson(otherFeatures, type);
+            DITTO_BREEDING = otherFeaturesMap.getOrDefault("ditto.breeding", 1);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -76,6 +83,11 @@ public class VeryScuffedCobblemonBreedingConfig {
                             .value(COOLDOWN_IN_MINUTES)
                             .name("command.pokebreed.vipcooldown")
                             .value(VIP_COOLDOWN_IN_MINUTES)
+                        .endObject()
+                    .name("otherFeatures")
+                        .beginObject()
+                            .name("ditto.breeding")
+                            .value(DITTO_BREEDING)
                         .endObject()
                     .endObject()
                     .flush();

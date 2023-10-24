@@ -301,6 +301,12 @@ public class PokeBreed {
         cancel("Cannot breed same genders.");
         return false;
       }
+      // Ditto breeding is disabled for the server.
+      if (VeryScuffedCobblemonBreedingConfig.DITTO_BREEDING == 0
+              && (pokemon1Species.equals("ditto") || pokemon2Species.equals("ditto"))) {
+        cancel("Cannot breed with ditto: server disabled.");
+        return false;
+      }
       // Both dittos.
       if (pokemon1Species.equals("ditto") && pokemon2Species.equals("ditto")) {
         cancel("Cannot breed dittos.");
