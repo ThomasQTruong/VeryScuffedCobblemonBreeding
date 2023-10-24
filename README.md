@@ -1,7 +1,7 @@
 # Very Scuffed Cobblemon Breeding (Mod)
 My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - This is my first ever mod! :)
-- It is an instant breeding system with a 5 minute default cooldown.
+- It is an instant breeding system with a 5-minute default cooldown.
 - Single player cooldown has a slight issue.
     - If you rejoin, you are instantly out of cooldown.
         - Cheat at your own will.
@@ -16,15 +16,16 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
         - No differing egg groups.
         - No Undiscovered egg group.
         - No double ditto.
+        - Ditto breeding can be disabled.
     - 3 IVs randomly get inherited from either parent.
-        - Unless breeding items come out.
+        - Unless breeding items are used (i.e. *power belt* and *destiny knot*).
     - EVs get reset.
-    - Nature gets RNG'd since no Everstone in the game currently.
     - Friendship gets randomized.
     - Gender gets randomized based on the Cobblemon's gender ratio.
     - Ability gets randomized.
         - Hidden abilities are supported.
-        - 60% chance to pass down if either parents have a hidden ability.
+          - 60% chance to pass down if either parents have a hidden ability.
+          - Can be disabled in config.
 
 ## Download
 - [Github](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases)
@@ -50,7 +51,8 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 4. Trying to breed again when under cooldown will let you know the cooldown duration.
     - ![image](https://user-images.githubusercontent.com/58405482/232265354-a8c21114-5a5d-4343-8be5-f7a41ed43727.png)
 
-## Getting breeding items:
+## Getting breeding items [LEGACY]:
+- Not needed anymore since v1.4 added breeding items to the game.
 - Only obtainable via commands.
     - Mainly dedicated for servers to sell these special items.
 - Can change the item to whatever you want.
@@ -73,6 +75,14 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 ### Cooldowns
 - command.pokebreed.cooldown - default is 5 minutes.
 - command.pokebreed.vipcooldown - default is 3 minutes.
+### Other Features
+- ditto.breeding - default is 1.
+  - 1 = ditto breeding ENABLED.
+  - 0 = ditto breeding DISABLED.
+- hidden.ability - default is 1.
+  - Only matters if either parent has a hidden ability.
+  - 1 = hidden ability can be passed.
+  - 0 = hidden ability cannot be passed.
 
 ## Credits
 This would not have been possible without these open source works:
