@@ -456,6 +456,11 @@ public class PokeBreed {
      * @return boolean - whether the Cobblemon has a hidden ability or not.
      */
     public boolean hasHiddenAbility(Pokemon toCheck) {
+      // Hidden ability is disabled.
+      if (VeryScuffedCobblemonBreedingConfig.HIDDEN_ABILITY == 0) {
+        return false;
+      }
+
       List<AbilityTemplate> possibleHiddens = new ArrayList<>();
 
       // Get list of hidden abilities.

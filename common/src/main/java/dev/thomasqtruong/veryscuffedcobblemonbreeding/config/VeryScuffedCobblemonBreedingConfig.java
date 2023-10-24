@@ -22,8 +22,8 @@ public class VeryScuffedCobblemonBreedingConfig {
     public static int VIP_COMMAND_POKEBREED_PERMISSION_LEVEL = 3;  // VIP permission level.
     public static int COOLDOWN_IN_MINUTES = 5;      // Default: 5 minutes cooldown.
     public static int VIP_COOLDOWN_IN_MINUTES = 3;  // VIP breeding cooldown, default: 3.
-
     public static int DITTO_BREEDING = 1;  // Whether breeding with a ditto is allowed or not, default: 1 (true).
+    public static int HIDDEN_ABILITY = 1;  // Whether passing down hidden abilities is enabled: 1 (true).
 
     public VeryScuffedCobblemonBreedingConfig() {
         init();
@@ -58,6 +58,7 @@ public class VeryScuffedCobblemonBreedingConfig {
             JsonObject otherFeatures = obj.get("otherFeatures").getAsJsonObject();
             HashMap<String, Integer> otherFeaturesMap = GSON.fromJson(otherFeatures, type);
             DITTO_BREEDING = otherFeaturesMap.getOrDefault("ditto.breeding", 1);
+            HIDDEN_ABILITY = otherFeaturesMap.getOrDefault("hidden.ability", 1);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -88,6 +89,8 @@ public class VeryScuffedCobblemonBreedingConfig {
                         .beginObject()
                             .name("ditto.breeding")
                             .value(DITTO_BREEDING)
+                            .name("hidden.ability")
+                            .value(HIDDEN_ABILITY)
                         .endObject()
                     .endObject()
                     .flush();
