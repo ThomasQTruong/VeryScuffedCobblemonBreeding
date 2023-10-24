@@ -30,13 +30,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -178,8 +172,18 @@ public class PokeBreed {
     public boolean changePage = false;
     public boolean dittoOrSelfBreeding = false;
 
-    // Power item mapping (item name : stat).
+    // v1.4 power item mapping (item name : stat).
     final HashMap<String, Stats> powerItemsMap = new HashMap<>() {{
+      put("power_anklet", Stats.SPEED);
+      put("power_band",   Stats.SPECIAL_DEFENCE);
+      put("power_belt",   Stats.DEFENCE);
+      put("power_bracer", Stats.ATTACK);
+      put("power_lens",   Stats.SPECIAL_ATTACK);
+      put("power_weight", Stats.HP);
+    }};
+
+    // Legacy power item mapping (item name : stat).
+    final HashMap<String, Stats> oldPowerItemsMap = new HashMap<>() {{
       put("Power Anklet", Stats.SPEED);
       put("Power Band",   Stats.SPECIAL_DEFENCE);
       put("Power Belt",   Stats.DEFENCE);
@@ -540,32 +544,49 @@ public class PokeBreed {
       toSet.add(Stats.SPECIAL_ATTACK);
       toSet.add(Stats.HP);
 
-      // Get parents' items' NBT.
+      // Get parents' items' NBT [LEGACY].
       NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();
       NbtCompound fullNbt2 = breederPokemon2.heldItem().getNbt();
 
-      // Get items' title NBT if exists.
-      String parent1Item = "";
+      // Get items' title NBT if exists [LEGACY].
+      String oldParent1Item = "";
       if (fullNbt1 != null && fullNbt1.contains("breedItem")) {
-        parent1Item = fullNbt1.getString("breedItem");
+        oldParent1Item = fullNbt1.getString("breedItem");
       }
-      String parent2Item = "";
+      String oldParent2Item = "";
       if (fullNbt2 != null && fullNbt2.contains("breedItem")) {
-        parent2Item = fullNbt2.getString("breedItem");
+        oldParent2Item = fullNbt2.getString("breedItem");
       }
+
+      // Get parents' items [v1.4 items].
+      String parent1Item = breederPokemon1.heldItem().toString().split(" ", 2)[1];
+      String parent2Item = breederPokemon2.heldItem().toString().split(" ", 2)[1];
+
+      // Filter out non-breeding items.
+      String[] breedingItems = {"power_anklet", "power_band", "power_belt", "power_bracer",
+                                "power_lens" , "power_weight", "destiny_knot"};
+      // Item not a breeding item, set to empty String.
+      if (!Arrays.asList(breedingItems).contains(parent1Item)) {
+        parent1Item = "";
+      }
+      if (!Arrays.asList(breedingItems).contains(parent2Item)) {
+        parent2Item = "";
+      }
+
 
       // Default is 3, 5 with destiny knot.
       int amountOfIVsToGet = 3;
-      if (parent1Item.equals("Destiny Knot") || parent2Item.equals("Destiny Knot")) {
+      if (parent1Item.equals("destiny_knot") || parent2Item.equals("destiny_knot")  // [v1.4]
+          || oldParent1Item.equals("Destiny Knot") || oldParent2Item.equals("Destiny Knot")) {  // [LEGACY]
         amountOfIVsToGet = 5;
       }
 
       // Count how many Cobblemons have a power item.
       int powerItemsCount = 0;
-      if (powerItemsMap.containsKey(parent1Item)) {
+      if (powerItemsMap.containsKey(parent1Item) || oldPowerItemsMap.containsKey(oldParent1Item)) {
         ++powerItemsCount;
       }
-      if (powerItemsMap.containsKey(parent2Item)) {
+      if (powerItemsMap.containsKey(parent2Item) || oldPowerItemsMap.containsKey(oldParent2Item)) {
         ++powerItemsCount;
       }
 
@@ -577,23 +598,39 @@ public class PokeBreed {
       } else if (powerItemsCount == 1) {
         // Only one parent has a power item.
         // Parent 2 has the item.
-        if (powerItemsMap.containsKey(parent2Item)) {
+        if (powerItemsMap.containsKey(parent2Item) || oldPowerItemsMap.containsKey(oldParent2Item)) {
           intRNG = 1;
         }
       }
 
       // Get IV from parent1 if holding power item.
       if (powerItemsCount > 0 && intRNG == 0) {
-        Stats stat = powerItemsMap.get(parent1Item);
+        Stats stat;
+        // v1.4 item.
+        if (!parent1Item.equals("")) {
+          stat = powerItemsMap.get(parent1Item);
+          toSet.remove(powerItemsMap.get(parent1Item));
+        } else {  // Legacy item.
+          stat = oldPowerItemsMap.get(oldParent1Item);
+          toSet.remove(oldPowerItemsMap.get(oldParent1Item));
+        }
+
         baby.setIV(stat, breederPokemon1.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
-        toSet.remove(powerItemsMap.get(parent1Item));
       } else if (powerItemsCount > 0) {
         // Get IV from parent2 if holding power item.
-        Stats stat = powerItemsMap.get(parent2Item);
+        Stats stat;
+        // parent2Item is not an empty String, v1.4 item.
+        if (!parent2Item.equals("")) {
+          stat = powerItemsMap.get(parent2Item);
+          toSet.remove(powerItemsMap.get(parent2Item));
+        } else {  // Legacy item.
+          stat = oldPowerItemsMap.get(oldParent2Item);
+          toSet.remove(oldPowerItemsMap.get(oldParent2Item));
+        }
+
         baby.setIV(stat, breederPokemon2.getIvs().getOrDefault(stat));
         --amountOfIVsToGet;
-        toSet.remove(powerItemsMap.get(parent2Item));
       }
 
       // Inherit stats randomly from parents.
@@ -625,7 +662,7 @@ public class PokeBreed {
      * @return Nature - the random nature.
      */
     public Nature getRandomNature() {
-      // Get parents' items' NBT.
+      // Get parents' items' NBT [legacy].
       NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();
       NbtCompound fullNbt2 = breederPokemon2.heldItem().getNbt();
 

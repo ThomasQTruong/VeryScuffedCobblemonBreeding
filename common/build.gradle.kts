@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+    // testRuntimeOnly("dev.architectury", "architectury-transformer", "9.1.12", classifier = "agent")
+    // testRuntimeOnly("dev.architectury", "architectury-transformer", "9.1.12", classifier = "runtime")
+
     implementation(libs.stdlib)
     implementation(libs.reflect)
 

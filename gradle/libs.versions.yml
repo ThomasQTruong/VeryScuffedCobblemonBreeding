@@ -23,7 +23,7 @@ versions:
   kotlinForForge: 4.3.0
 
   # common
-  architectury: 6.5.69
+  architectury: 9.1.12
 
   # test
   junit: 5.9.0

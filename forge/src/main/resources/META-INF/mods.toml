@@ -33,4 +33,4 @@ versionRange="[45,)" #mandatory
 [[dependencies.veryscuffedcobblemonbreeding]]
 modId="architectury"
 mandatory=true
-versionRange="[6.5.69,)"
+versionRange="[9.1.12,)"
