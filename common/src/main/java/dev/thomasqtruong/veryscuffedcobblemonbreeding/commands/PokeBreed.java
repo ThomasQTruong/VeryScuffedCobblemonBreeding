@@ -558,14 +558,14 @@ public class PokeBreed {
         oldParent2Item = fullNbt2.getString("breedItem");
       }
 
-      // Get parents' items [v1.4 items].
+      // Get parents' items [OFFICIAL].
       String parent1Item = breederPokemon1.heldItem().toString().split(" ", 2)[1];
       String parent2Item = breederPokemon2.heldItem().toString().split(" ", 2)[1];
 
-      // Filter out non-breeding items.
+      // Filter out non-breeding items [OFFICIAL].
       String[] breedingItems = {"power_anklet", "power_band", "power_belt", "power_bracer",
                                 "power_lens" , "power_weight", "destiny_knot"};
-      // Item not a breeding item, set to empty String.
+      // Item not a breeding item, set to empty String [OFFICIAL].
       if (!Arrays.asList(breedingItems).contains(parent1Item)) {
         parent1Item = "";
       }
@@ -576,7 +576,7 @@ public class PokeBreed {
 
       // Default is 3, 5 with destiny knot.
       int amountOfIVsToGet = 3;
-      if (parent1Item.equals("destiny_knot") || parent2Item.equals("destiny_knot")  // [v1.4]
+      if (parent1Item.equals("destiny_knot") || parent2Item.equals("destiny_knot")  // [OFFICIAL]
           || oldParent1Item.equals("Destiny Knot") || oldParent2Item.equals("Destiny Knot")) {  // [LEGACY]
         amountOfIVsToGet = 5;
       }
@@ -620,7 +620,7 @@ public class PokeBreed {
       } else if (powerItemsCount > 0) {
         // Get IV from parent2 if holding power item.
         Stats stat;
-        // parent2Item is not an empty String, v1.4 item.
+        // parent2Item is not an empty String, is an [OFFICIAL] item.
         if (!parent2Item.equals("")) {
           stat = powerItemsMap.get(parent2Item);
           toSet.remove(powerItemsMap.get(parent2Item));
@@ -662,22 +662,27 @@ public class PokeBreed {
      * @return Nature - the random nature.
      */
     public Nature getRandomNature() {
-      // Get parents' items' NBT [legacy].
+      // Get parents' items' NBT [LEGACY].
       NbtCompound fullNbt1 = breederPokemon1.heldItem().getNbt();
       NbtCompound fullNbt2 = breederPokemon2.heldItem().getNbt();
 
-      // Get items' title NBT if exists.
-      String parent1Item = "";
+      // Get items' title NBT if exists [LEGACY].
+      String oldParent1Item = "";
       if (fullNbt1 != null && fullNbt1.contains("breedItem")) {
-        parent1Item = fullNbt1.getString("breedItem");
+        oldParent1Item = fullNbt1.getString("breedItem");
       }
-      String parent2Item = "";
+      String oldParent2Item = "";
       if (fullNbt2 != null && fullNbt2.contains("breedItem")) {
-        parent2Item = fullNbt2.getString("breedItem");
+        oldParent2Item = fullNbt2.getString("breedItem");
       }
 
+      // Get parents' items [OFFICIAL].
+      String parent1Item = breederPokemon1.heldItem().toString().split(" ", 2)[1];
+      String parent2Item = breederPokemon2.heldItem().toString().split(" ", 2)[1];
+
       // Both have everstones.
-      if (parent1Item.equals("Everstone") && parent2Item.equals("Everstone")) {
+      if ((parent1Item.equals("everstone") || oldParent1Item.equals("Everstone"))
+          && (parent2Item.equals("everstone") || oldParent2Item.equals("Everstone"))) {
         int parentRNG = RNG.nextInt(2);
         // First parent's nature inherited.
         if (parentRNG == 0) {
@@ -687,10 +692,10 @@ public class PokeBreed {
         return breederPokemon2.getNature();
       }
       // Only parent 1 has everstone.
-      if (parent1Item.equals("Everstone")) {
+      if (parent1Item.equals("everstone") || oldParent1Item.equals("Everstone")) {
         return breederPokemon1.getNature();
       }
-      if (parent2Item.equals("Everstone")) {
+      if (parent2Item.equals("everstone") || oldParent2Item.equals("Everstone")) {
         return breederPokemon2.getNature();
       }
 
