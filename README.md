@@ -1,4 +1,10 @@
-# Very Scuffed Cobblemon Breeding (Mod)
+# Orphan Scuffed Cobblemon Breeding (Mod)
+- Unofficial version of Scuffed Breeding.
+- This was requested.
+  - It deletes the parents after breeding.
+    - Held items will be given back.
+
+# Description
 My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
 - This is my first ever mod! :)
 - It is an instant breeding system with a 5-minute default cooldown.
@@ -27,7 +33,7 @@ My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
           - 60% chance to pass down if either parents have a hidden ability.
           - Can be disabled in config.
 
-## Download
+## Official Version Downloads
 - [Github](https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/releases)
 - [Modrinth](https://modrinth.com/mod/veryscuffedcobblemonbreeding)
 - [CursedForge](https://curseforge.com/minecraft/mc-mods/veryscuffedcobblemonbreeding/)

@@ -6,13 +6,14 @@ issueTrackerURL="https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding/i
 [[mods]] #mandatory
 modId="veryscuffedcobblemonbreeding" #mandatory
 version="${version}" #mandatory
-displayName="Very Scuffed Cobblemon Breeding" #mandatory
+displayName="Orphan Scuffed Cobblemon Breeding" #mandatory
 displayURL="https://github.com/ThomasQTruong/VeryScuffedCobblemonBreeding"
 #logoFile="examplemod.png" #optional
 credits="Thanks to the Cobblemon developers and Xwaffle1."
 authors="ThomasQTruong"
 description='''
- My attempt to create a scuffed Cobblemon "breeding" for my friends and I to use.
+ [!!!] UNOFFICIAL ORPHAN EDITION [!!!]
+ Deletes the parents after a successful breed.
 '''
 
 # A URL for the "homepage" for this mod, displayed in the mod UI

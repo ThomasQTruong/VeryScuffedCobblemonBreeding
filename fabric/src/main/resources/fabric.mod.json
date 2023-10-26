@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "veryscuffedcobblemonbreeding",
   "version": "${version}",
-  "name": "VeryScuffedCobblemonBreeding",
-  "description": "My attempt to create a scuffed Cobblemon \"breeding\" for my friends and I to use.",
+  "name": "Orphan Scuffed Cobblemon Breeding",
+  "description": "[!!!] UNOFFICIAL ORPHAN EDITION [!!!]\n Deletes the parents after a successful breed.",
   "authors": [
     "ThomasQTruong"
   ],

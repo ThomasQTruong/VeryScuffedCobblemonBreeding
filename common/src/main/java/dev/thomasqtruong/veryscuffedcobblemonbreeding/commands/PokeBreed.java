@@ -1,5 +1,3 @@
-// Test
-
 package dev.thomasqtruong.veryscuffedcobblemonbreeding.commands;
 
 import com.cobblemon.mod.common.Cobblemon;
@@ -12,7 +10,9 @@ import com.cobblemon.mod.common.api.pokemon.Natures;
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
+import com.cobblemon.mod.common.api.storage.NoPokemonStoreException;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
+import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.cobblemon.mod.common.pokemon.EVs;
 import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.IVs;
@@ -260,8 +260,35 @@ public class PokeBreed {
         Pokemon baby = getPokemonBred();
 
         // Add Pokemon to party.
-        PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(breeder);
-        party.add(baby);
+        try {
+          PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(breeder);
+          PCStore pcParty = Cobblemon.INSTANCE.getStorage().getPC(breederUUID);
+
+          party.add(baby);
+
+          // Orphanate the baby.
+          party.remove(breederPokemon1);
+          party.remove(breederPokemon2);
+          pcParty.remove(breederPokemon1);
+          pcParty.remove(breederPokemon2);
+
+          // Return held items back to player.
+          if (!breederPokemon1.heldItem().toString().equals("0 air")) {
+            // Try to give item to player; if full, drop item on player.
+            if (!breeder.giveItemStack(breederPokemon1.heldItem())) {
+              breeder.dropItem(breederPokemon1.heldItem().getItem());
+            }
+          }
+          if (!breederPokemon2.heldItem().toString().equals("0 air")) {
+            // Try to give item to player; if full, drop item on player.
+            if (!breeder.giveItemStack(breederPokemon2.heldItem())) {
+              breeder.dropItem(breederPokemon2.heldItem().getItem());
+            }
+          }
+        }
+        catch(NoPokemonStoreException e) {
+          throw new RuntimeException(e);
+        }
 
         // Send success message and set cooldown.
         Text toSend = Text.literal("Breed complete!").formatted(Formatting.GREEN);
