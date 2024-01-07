@@ -268,11 +268,15 @@ public class PokeBreed {
         if (isVIP) {
           scheduler.schedule(() -> {
             breedSessions.remove(breederUUID);
+            Text noCooldownMessage = Text.literal("Breeding is now available.").formatted(Formatting.GREEN);
+            breeder.sendMessage(noCooldownMessage);
           }, VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
         } else {
           // Player does not have VIP status.
           scheduler.schedule(() -> {
             breedSessions.remove(breederUUID);
+            Text noCooldownMessage = Text.literal("Breeding is now available.").formatted(Formatting.GREEN);
+            breeder.sendMessage(noCooldownMessage);
           }, VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
         }
         timeBred = System.currentTimeMillis();
