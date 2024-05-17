@@ -423,7 +423,7 @@ public class PokeBreed {
       }
 
       baby.setGender(getRandomGender(baby));
-      baby.setAbility(getRandomAbility(baby));
+      baby.updateAbility(getRandomAbility(baby));
       inheritIVs(baby);
       baby.setNature(getRandomNature());
 
