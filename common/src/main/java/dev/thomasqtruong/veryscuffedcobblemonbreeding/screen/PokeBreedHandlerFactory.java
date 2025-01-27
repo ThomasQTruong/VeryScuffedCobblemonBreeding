@@ -1,7 +1,6 @@
 package dev.thomasqtruong.veryscuffedcobblemonbreeding.screen;
 
 import com.cobblemon.mod.common.Cobblemon;
-import com.cobblemon.mod.common.api.storage.NoPokemonStoreException;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
 import com.cobblemon.mod.common.api.storage.pc.PCBox;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
@@ -9,33 +8,38 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.util.ItemBuilder;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.commands.PokeBreed;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.util.PokemonUtility;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
 
 /**
  * Handles the PokeBreed GUI.
  */
-public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
+public class PokeBreedHandlerFactory implements MenuProvider {
+  private SimpleContainer inventory = new SimpleContainer(size());
   private PokeBreed.BreedSession breedSession;
   private int boxNumber = 0;
   final private int[] pageSettings = {1, 5, 10,
-          15, 20, 25,
-          50, 100, 200};
+                                      15, 20, 25,
+                                      50, 100, 200};
 
 
   /**
@@ -70,8 +74,8 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
    * Get display name for the GUI.
    */
   @Override
-  public Text getDisplayName() {
-    return Text.of("Breed: PC Box " + (boxNumber + 1));
+  public @NotNull Component getDisplayName() {
+    return Component.literal("Breed: PC Box " + (boxNumber + 1));
   }
 
 
@@ -97,37 +101,36 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
 
   /**
    * Updates the user's GUI inventory.
-   *
-   * @param inventory - the PokeBreed GUI.
    */
-  public void updateInventory(SimpleInventory inventory) {
-    ItemStack emptyPokemon = new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS_PANE);
+  public void updateInventory() {
+    ItemBuilder emptyPokemon = new ItemBuilder(Items.LIGHT_BLUE_STAINED_GLASS_PANE);
+    ItemBuilder emptyNode = new ItemBuilder(Items.GRAY_STAINED_GLASS_PANE).setCustomName(Component.literal(" "));
 
     // For index 15-17, set as blank.
     for (int i = 15; i <= 17; ++i) {
       // Set as gray glass.
-      inventory.setStack(i, new ItemStack(Items.GRAY_STAINED_GLASS_PANE)
-              .setCustomName(Text.of(" ")));
+      inventory.setItem(i, emptyNode.getStack());
     }
 
     // Breeding choices.
-    inventory.setStack(6, emptyPokemon.setCustomName(Text.of("To Breed #1")));
+    inventory.setItem(6, emptyPokemon.setCustomName(Component.literal("To Breed #1")).build());
     if (breedSession.breederPokemon1 != null) {
-      inventory.setStack(6, PokemonUtility.pokemonToItem(breedSession.breederPokemon1));
+      inventory.setItem(6, PokemonUtility.INSTANCE.pokemonToItem(breedSession.breederPokemon1));
     }
-    inventory.setStack(7, new ItemStack(Items.PINK_STAINED_GLASS_PANE).setCustomName(Text.of(" ")));
-    inventory.setStack(8, emptyPokemon.setCustomName(Text.of("To Breed #2")));
+    inventory.setItem(7, new ItemBuilder(Items.PINK_STAINED_GLASS_PANE).setCustomName(
+            Component.literal(" ")).build());
+    inventory.setItem(8, emptyPokemon.setCustomName(Component.literal("To Breed #2")).build());
     if (breedSession.breederPokemon2 != null) {
-      inventory.setStack(8, PokemonUtility.pokemonToItem(breedSession.breederPokemon2));
+      inventory.setItem(8, PokemonUtility.INSTANCE.pokemonToItem(breedSession.breederPokemon2));
     }
 
     // Buttons
-    inventory.setStack(size() - 1, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
-            Text.literal("Next Box")).build());
-    inventory.setStack(size() - 2, new ItemStack(Items.GRAY_DYE).setCustomName(
-            Text.literal("Click to Breed")));
-    inventory.setStack(size() - 3, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
-            Text.literal("Previous Box")).build());
+    inventory.setItem(size() - 1, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
+            Component.literal("Next Box")).build());
+    inventory.setItem(size() - 2, new ItemBuilder(Items.GRAY_DYE).setCustomName(
+            Component.literal("Click to Breed")).build());
+    inventory.setItem(size() - 3, new ItemBuilder(Items.ARROW).hideAdditional().setCustomName(
+            Component.literal("Previous Box")).build());
 
     // Settings
     int pageIndex = 0;
@@ -135,11 +138,11 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
       for (int j = 0; j < 3; ++j) {
         // Is current setting, make green pane.
         if (pageSettings[pageIndex] == breedSession.pageChangeSetting) {
-          inventory.setStack(i + j, new ItemStack(Items.LIME_STAINED_GLASS_PANE)
-                  .setCustomName(Text.literal("Change box by " + String.valueOf(pageSettings[pageIndex]))));
+          inventory.setItem(i + j, new ItemBuilder(Items.LIME_STAINED_GLASS_PANE).setCustomName(
+                  Component.literal("Change box by " + String.valueOf(pageSettings[pageIndex]))).build());
         } else {
-          inventory.setStack(i + j, new ItemStack(Items.WHITE_STAINED_GLASS_PANE)
-                  .setCustomName(Text.literal("Change box by " + String.valueOf(pageSettings[pageIndex]))));
+          inventory.setItem(i + j, new ItemBuilder(Items.WHITE_STAINED_GLASS_PANE).setCustomName(
+                  Component.literal("Change box by " + String.valueOf(pageSettings[pageIndex]))).build());
         }
         ++pageIndex;
       }
@@ -157,20 +160,18 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
    */
   @Nullable
   @Override
-  public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-    // Make GUI of size() size.
-    SimpleInventory inventory = new SimpleInventory(size());
-    ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+  public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
+    ServerPlayer serverPlayer = (ServerPlayer) player;
 
-    updateInventory(inventory);
+    updateInventory();
 
     // Grab player's Party and PC data.
     PlayerPartyStore breederParty = null;
     PCStore breederStorage = null;
     try {
-      breederParty = Cobblemon.INSTANCE.getStorage().getParty(serverPlayer.getUuid());
-      breederStorage = Cobblemon.INSTANCE.getStorage().getPC(serverPlayer.getUuid());
-    } catch (NoPokemonStoreException e) {
+      breederParty = Cobblemon.INSTANCE.getStorage().getParty(serverPlayer);
+      breederStorage = Cobblemon.INSTANCE.getStorage().getPC(serverPlayer);
+    } catch (Exception e) {
       return null;
     }
 
@@ -182,16 +183,16 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
       // Pokemon exists.
       if (pokemon != null) {
         // Turn Pokemon into item.
-        ItemStack item = PokemonUtility.pokemonToItem(pokemon);
-        NbtCompound slotNbt = item.getOrCreateSubNbt("slot");
-        slotNbt.putInt("slot", i);
-        item.setSubNbt("slot", slotNbt);
-        inventory.setStack(i, item);
+        ItemStack item = PokemonUtility.INSTANCE.pokemonToItem(pokemon);
+        CompoundTag slotTag = new CompoundTag();
+        slotTag.putInt("slot", i);
+        item.set(DataComponents.CUSTOM_DATA, CustomData.of(slotTag));
+        inventory.setItem(i, item);
       } else {
       // Doesn't exist.
-        // Put a red stained glass instead.
-        inventory.setStack(i, new ItemStack(Items.RED_STAINED_GLASS_PANE).setCustomName(
-                Text.literal("Empty").formatted(Formatting.GRAY)));
+        // Put a red stained-glass instead.
+        inventory.setItem(i, new ItemBuilder(Items.RED_STAINED_GLASS_PANE).setCustomName(
+                Component.literal("Empty").withStyle(ChatFormatting.GRAY)).build());
       }
     }
 
@@ -204,47 +205,46 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
       int index = i % 6;
 
       if (pokemon != null) {
-        ItemStack item = PokemonUtility.pokemonToItem(pokemon);
-        NbtCompound slotNbt = item.getOrCreateSubNbt("slot");
-        slotNbt.putInt("slot", i);
-        item.setSubNbt("slot", slotNbt);
-        inventory.setStack((int) (row * 9) + index, item);
+        ItemStack item = PokemonUtility.INSTANCE.pokemonToItem(pokemon);
+        CompoundTag slotTag = new CompoundTag();
+        slotTag.putInt("slot", i);
+        item.set(DataComponents.CUSTOM_DATA, CustomData.of(slotTag));
+        inventory.setItem((int) (row * 9) + index, item);
       } else {
-        inventory.setStack((int) (row * 9) + index, new ItemStack(Items.RED_STAINED_GLASS_PANE)
-                .setCustomName(Text.literal("Empty")
-                        .formatted(Formatting.GRAY)));
+        inventory.setItem((int) (row * 9) + index, new ItemBuilder(Items.RED_STAINED_GLASS_PANE)
+                .setCustomName(Component.literal("Empty")
+                        .withStyle(ChatFormatting.GRAY)).build());
       }
     }
     PlayerPartyStore finalBreederParty = breederParty;
 
     // Returns the GUI.
-    return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6,
-            syncId, inv, inventory, rows()) {
-
+    return new ChestMenu(MenuType.GENERIC_9x6, syncId, inv, inventory, rows()) {
       /**
        * When a slot is clicked in the GUI.
        *
        * @param slotIndex - the index of the clicked slot.
        * @param button - the button clicked (?).
        * @param actionType - the type of action (?).
+       * @param player - the player that clicked.
        */
       @Override
-      public void onSlotClick(int slotIndex, int button, SlotActionType actionType,
-                              PlayerEntity player) {
+      public void clicked(int slotIndex, int button, ClickType actionType, Player player) {
         // If player cancels.
         if (breedSession.cancelled) {
-          player.sendMessage(Text.literal("Breeding has been cancelled.")
-                  .formatted(Formatting.RED));
-          player.closeHandledScreen();
+          ServerPlayer serverPlayer = (ServerPlayer) player;
+          serverPlayer.sendSystemMessage(Component.literal("Breeding has been cancelled.")
+                  .withStyle(ChatFormatting.RED));
+          serverPlayer.closeContainer();
         }
 
-        // Clicked accept.
+        // Player clicked accept.
         if (slotIndex == size() - 2) {
           breedSession.breederAccept = true;
           breedSession.doBreed();
-          breedSession.breeder.closeHandledScreen();
+          breedSession.breeder.closeContainer();
         }
-        // Ignore when clicking a slot outside of the GUI.
+        // Ignore when clicking a slot outside the GUI.
         if (slotIndex > size()) {
           return;
         }
@@ -263,25 +263,28 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
           // Clicked next page.
           // Indicate that the old GUI closing is a page change, not cancel.
           breedSession.changePage = true;
-          player.openHandledScreen(new PokeBreedHandlerFactory(breedSession,
-                  boxNumber + breedSession.pageChangeSetting));
+          player.openMenu(new PokeBreedHandlerFactory(breedSession, boxNumber + breedSession.pageChangeSetting));
           // Back to default value.
           breedSession.changePage = false;
         } else if (slotIndex == size() - 3) {
           // Clicked previous page.
           // Indicate that the old GUI closing is a page change, not cancel.
           breedSession.changePage = true;
-          player.openHandledScreen(new PokeBreedHandlerFactory(breedSession,
-                  boxNumber - breedSession.pageChangeSetting));
+          player.openMenu(new PokeBreedHandlerFactory(breedSession, boxNumber - breedSession.pageChangeSetting));
           // Back to default value.
           breedSession.changePage = false;
         } else {
           // Get item that was clicked.
-          ItemStack stack = getInventory().getStack(slotIndex);
+          ItemStack stack = inventory.getItem(slotIndex);
           // If item is a slot.
-          if (stack != null && stack.hasNbt() && stack.getSubNbt("slot") != null) {
+          if (stack != null && stack.has(DataComponents.CUSTOM_DATA)
+                                          && Objects.nonNull(stack.get(DataComponents.CUSTOM_DATA).contains("slot"))) {
+            // Extract information.
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            CompoundTag tag = Objects.requireNonNull(customData).copyTag();
+
             // Get pokemon at slot.
-            int slot = stack.getSubNbt("slot").getInt("slot");
+            int slot = tag.getInt("slot");
             Pokemon pokemon = null;
             if (slotIndex >= 0 && slotIndex <= 5) {
               pokemon = finalBreederParty.get(slot);
@@ -299,7 +302,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
                 // First Pokemon not selected yet, select on first slot.
                 breedSession.breederPokemon1 = pokemon;
               } else {
-                // First Pokemon already selected, select on second slot if not dupelicate.
+                // First Pokemon already selected, select on second slot if not duplicate.
                 if (breedSession.breederPokemon1 == pokemon) {
                   return;
                 }
@@ -309,7 +312,7 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
           }
         }
 
-        updateInventory(inventory);
+        updateInventory();
       }
 
 
@@ -318,34 +321,22 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
        *
        * @param player - the player that clicked the slot.
        * @param index - the clicked slot's index.
-       * @return ItemStack - the item at the.
+       * @return ItemStack - an empty item to prevent transfer.
        */
       @Override
-      public ItemStack quickMove(PlayerEntity player, int index) {
-        return null;
+      public @NotNull ItemStack quickMoveStack(Player player, int index) {
+        return ItemStack.EMPTY;
       }
 
 
       /**
-       * Disable insertion in the slots (return false always).
+       * If the breed GUI is still valid.
        *
-       * @param slot - the slot that was inserted to.
-       * @return boolean - whether it can be inserted into.
+       * @param player - the player using the GUI.
        */
       @Override
-      public boolean canInsertIntoSlot(Slot slot) {
-        return false;
-      }
-
-
-      /**
-       * Disable dropping items from inventory.
-       *
-       * @param player - the player that tried to drop.
-       * @param inventory - the PokeBreed GUI.
-       */
-      @Override
-      protected void dropInventory(PlayerEntity player, Inventory inventory) {
+      public boolean stillValid(Player player) {
+        return true;
       }
 
 
@@ -355,13 +346,14 @@ public class PokeBreedHandlerFactory implements NamedScreenHandlerFactory {
        * @param player - the player that was trying to breed Cobblemons.
        */
       @Override
-      public void onClosed(PlayerEntity player) {
+      public void removed(Player player) {
         // GUI closed AND it wasn't to change page (player closed).
         if (!breedSession.cancelled && !breedSession.changePage) {
           // Cancel session.
           breedSession.cancel("GUI closed.");
-          breedSession.breeder.closeHandledScreen();
+          breedSession.breeder.closeContainer();
         }
+        super.removed(player);
       }
     };
   }

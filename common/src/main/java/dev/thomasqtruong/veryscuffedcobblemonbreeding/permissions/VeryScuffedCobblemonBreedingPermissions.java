@@ -4,7 +4,7 @@ import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.permission.CobblemonPermission;
 import com.cobblemon.mod.common.api.permission.PermissionLevel;
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig;
-import net.minecraft.command.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 
 public class VeryScuffedCobblemonBreedingPermissions {
 
@@ -25,7 +25,7 @@ public class VeryScuffedCobblemonBreedingPermissions {
         return PermissionLevel.CHEAT_COMMANDS_AND_COMMAND_BLOCKS;
     }
 
-    public static boolean checkPermission(CommandSource source, CobblemonPermission permission) {
+    public static boolean checkPermission(CommandSourceStack source, CobblemonPermission permission) {
         return Cobblemon.INSTANCE.getPermissionValidator().hasPermission(source, permission);
     }
 }

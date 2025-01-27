@@ -1,39 +1,29 @@
 plugins {
-    id("cobblemon.base-conventions")
-    id("cobblemon.publish-conventions")
+    id("dev.architectury.loom")
+    id("architectury-plugin")
 }
+
 
 architectury {
-    common()
+    common("neoforge", "fabric")
 }
 
-repositories {
-    maven {
-        url = uri("https://cursemaven.com")
-        content {
-            includeGroup("curse.maven")
-        }
+loom {
+    silentMojangMappingsLicense()
+    mixin {
+        defaultRefmapName.set("veryscuffedcobblemonbreeding-common-refmap.json")
     }
-    mavenLocal()
 }
 
 dependencies {
-    // testRuntimeOnly("dev.architectury", "architectury-transformer", "9.1.12", classifier = "agent")
-    // testRuntimeOnly("dev.architectury", "architectury-transformer", "9.1.12", classifier = "runtime")
+    minecraft("com.mojang:minecraft:${property("minecraft_version")}")
+    // The following line declares the mojmap mappings, you may use other mappings as well
+    mappings(loom.officialMojangMappings())
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation("net.fabricmc:fabric-loader:${property("fabric_loader_version")}")
 
-    implementation(libs.stdlib)
-    implementation(libs.reflect)
-
-    modImplementation(libs.fabricLoader)
-    modApi ("curse.maven:cobblemon-687131:5336539")
-    modApi(libs.architectury)
-
-    //shadowCommon group: 'commons-io', name: 'commons-io', version: '2.6'
-
-
-    compileOnly("net.luckperms:api:5.4")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    modImplementation("org.apache.httpcomponents:httpclient:4.5.13")
+    modImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    modImplementation("com.cobblemon:mod:${property("cobblemon_version")}") { isTransitive = false }
 }

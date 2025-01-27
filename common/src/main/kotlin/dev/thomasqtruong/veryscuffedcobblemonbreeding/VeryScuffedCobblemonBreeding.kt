@@ -1,34 +1,33 @@
 package dev.thomasqtruong.veryscuffedcobblemonbreeding
 
 import com.mojang.brigadier.CommandDispatcher
-import dev.architectury.event.events.common.CommandRegistrationEvent
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.commands.*
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.CobblemonConfig
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.config.VeryScuffedCobblemonBreedingConfig
 import dev.thomasqtruong.veryscuffedcobblemonbreeding.permissions.VeryScuffedCobblemonBreedingPermissions
-import net.minecraft.command.CommandRegistryAccess
-import net.minecraft.server.command.CommandManager
-import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.commands.CommandSourceStack
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 object VeryScuffedCobblemonBreeding {
   public lateinit var permissions: VeryScuffedCobblemonBreedingPermissions
   const val MODID = "veryscuffedcobblemonbreeding"
+  var LOGGER: Logger = LogManager.getLogger("[VeryScuffedCobblemonBreeding]")
+
   fun initialize() {
-    System.out.println("VeryScuffedCobblemonBreedingPermissions - Initialized")
+    getLogger().info("VeryScuffedCobblemonBreedingPermissions - Initialized")
     VeryScuffedCobblemonBreedingConfig() // must load before permissions so perms use default permission level.
     this.permissions = VeryScuffedCobblemonBreedingPermissions()
 
     // Load official Cobblemon's config.
     CobblemonConfig()
-
-    CommandRegistrationEvent.EVENT.register(VeryScuffedCobblemonBreeding::registerCommands)
   }
 
-  fun registerCommands(
-    dispatcher: CommandDispatcher<ServerCommandSource>,
-    registry: CommandRegistryAccess,
-    selection: CommandManager.RegistrationEnvironment
-  ) {
+  fun getLogger(): Logger {
+    return this.LOGGER;
+  }
+
+  fun registerCommands(dispatcher: CommandDispatcher<CommandSourceStack>) {
     PokeBreed().register(dispatcher)
   }
 }
