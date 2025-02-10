@@ -30,6 +30,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import oshi.jna.platform.mac.SystemB;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -51,7 +52,7 @@ public class PokeBreed {
 
   /**
    * Registers the command with the command dispatcher.
-   * 
+   *
    * @param dispatcher - the command dispatcher.
    */
   public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -269,7 +270,7 @@ public class PokeBreed {
           scheduler.schedule(() -> {
             breedSessions.remove(breederUUID);
             Component noCooldownMessage = Component.literal("Breeding is now available.")
-                                                   .withStyle(ChatFormatting.GREEN);
+                    .withStyle(ChatFormatting.GREEN);
             breeder.sendSystemMessage(noCooldownMessage);
           }, VeryScuffedCobblemonBreedingConfig.VIP_COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
         } else {
@@ -277,7 +278,7 @@ public class PokeBreed {
           scheduler.schedule(() -> {
             breedSessions.remove(breederUUID);
             Component noCooldownMessage = Component.literal("Breeding is now available.")
-                                                   .withStyle(ChatFormatting.GREEN);
+                    .withStyle(ChatFormatting.GREEN);
             breeder.sendSystemMessage(noCooldownMessage);
           }, VeryScuffedCobblemonBreedingConfig.COOLDOWN_IN_MINUTES, TimeUnit.MINUTES);
         }
@@ -424,8 +425,15 @@ public class PokeBreed {
         }
       }
 
+      // Get ability.
+      boolean needToRollHidden = hasHiddenAbility(baby);
+      baby.rollAbility();  // Roll commons & overwrite forced from prior version if needed.
+      // Roll for a hidden ability.
+      if (needToRollHidden) {
+        baby.updateAbility(rollHiddenAbility(baby));
+      }
+
       baby.setGender(getRandomGender(baby));
-      baby.updateAbility(getRandomAbility(baby));
       inheritIVs(baby);
       baby.setNature(getRandomNature());
       baby.setOriginalTrainer(breederUUID);
@@ -482,54 +490,38 @@ public class PokeBreed {
 
 
     /**
-     * Gets a random ability for a Cobblemon.
-     * Supports hidden abilities.
+     * Rolls for a hidden ability for the Cobblemon.
      *
-     * @param getFor - the Cobblemon to get a random ability for.
-     * @return Ability - the ability that was chosen randomly.
+     * @param getFor - the Cobblemon to roll the ability for.
+     * @return Ability - the hidden ability rolled or what it had already.
      */
-    public Ability getRandomAbility(Pokemon getFor) {
+    public Ability rollHiddenAbility(Pokemon getFor) {
+      // Generate number from 0-99.
+      int intRNG = RNG.nextInt(100);
+
+      // Failed 60% roll (0-59 = 60%), no hidden ability.
+      if (intRNG >= 60) {
+        return getFor.getAbility();
+      }
+
       // Priority.LOWEST = common ability, Priority.LOW = hidden ability.
-      // Get all possible abilities for Pokemon.
       AbilityPool possibleAbilities = getFor.getForm().getAbilities();
-      // Defaulting to common ability.
-      int intRNG = 100;
-
-      // Get lists of all the possible hidden/common abilities.
+      // Get the list of all the possible hidden abilities.
       List<AbilityTemplate> possibleHiddens = new ArrayList<>();
-      List<AbilityTemplate> possibleCommons = new ArrayList<>();
-
       for (PotentialAbility potentialAbility : possibleAbilities) {
         // Is a hidden ability.
         if (potentialAbility.getPriority() == Priority.LOW) {
           possibleHiddens.add(potentialAbility.getTemplate());
-        } else if (potentialAbility.getPriority() == Priority.LOWEST) {
-          // Is a common ability.
-          possibleCommons.add(potentialAbility.getTemplate());
         }
       }
 
-      // Parent(s) has hidden ability, offspring has a 60% chance of getting it too.
-      if (hasHiddenAbility(breederPokemon1) || hasHiddenAbility(breederPokemon2)) {
-        intRNG = RNG.nextInt(100);  // 0-99
+      // Add every hidden ability to possibleDraws, draw random hidden if exists.
+      if (!possibleHiddens.isEmpty()) {
+        intRNG = RNG.nextInt(possibleHiddens.size());
+        return new Ability(possibleHiddens.get(intRNG), false, Priority.NORMAL);
       }
 
-      // Hit hidden ability.
-      if (intRNG < 60) {  // 0-59 (60%)
-        // Add every hidden ability to possibleDraws, draw random hidden if exists.
-        if (!possibleHiddens.isEmpty()) {
-          intRNG = RNG.nextInt(possibleHiddens.size());
-          return new Ability(possibleHiddens.get(intRNG), false, Priority.NORMAL);
-        }
-      } else {
-        // Did not hit hidden ability, draw random common if exists.
-        if (!possibleCommons.isEmpty()) {
-          intRNG = RNG.nextInt(possibleCommons.size());
-          return new Ability(possibleCommons.get(intRNG), false, Priority.NORMAL);
-        }
-      }
-
-      // No ability found.
+      // No hidden ability exists?
       return getFor.getAbility();
     }
 
@@ -593,7 +585,7 @@ public class PokeBreed {
 
       // Filter out non-breeding items [OFFICIAL].
       String[] breedingItems = {"power_anklet", "power_band", "power_belt", "power_bracer",
-                                "power_lens" , "power_weight", "destiny_knot"};
+              "power_lens" , "power_weight", "destiny_knot"};
       // Item not a breeding item, set to empty String [OFFICIAL].
       if (!Arrays.asList(breedingItems).contains(parent1Item)) {
         parent1Item = "";
@@ -605,7 +597,7 @@ public class PokeBreed {
       // Default is 3, 5 with destiny knot.
       int amountOfIVsToGet = 3;
       if (parent1Item.equals("destiny_knot") || parent2Item.equals("destiny_knot")  // [OFFICIAL]
-          || oldParent1Item.equals("Destiny Knot") || oldParent2Item.equals("Destiny Knot")) {  // [LEGACY]
+              || oldParent1Item.equals("Destiny Knot") || oldParent2Item.equals("Destiny Knot")) {  // [LEGACY]
         amountOfIVsToGet = 5;
       }
 
@@ -721,7 +713,7 @@ public class PokeBreed {
 
       // Both have everstones.
       if ((parent1Item.equals("everstone") || oldParent1Item.equals("Everstone"))
-          && (parent2Item.equals("everstone") || oldParent2Item.equals("Everstone"))) {
+              && (parent2Item.equals("everstone") || oldParent2Item.equals("Everstone"))) {
         int parentRNG = RNG.nextInt(2);
         // First parent's nature inherited.
         if (parentRNG == 0) {
