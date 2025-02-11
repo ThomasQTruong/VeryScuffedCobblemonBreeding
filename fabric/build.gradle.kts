@@ -68,7 +68,8 @@ tasks {
         dependsOn(shadowJar)
         inputFile.set(shadowJar.flatMap { it.archiveFile })
         archiveBaseName.set("veryscuffedcobblemonbreeding-${project.name}")
-        archiveVersion.set("${rootProject.version}")
+        archiveVersion.set("${rootProject.version}+${rootProject.property("minecraft_version")}")
+        destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
     }
 
 }

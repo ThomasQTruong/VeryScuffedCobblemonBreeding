@@ -5,8 +5,8 @@ license = "MIT"
 
 [[mods]]
 modId = "veryscuffedcobblemonbreeding"
-version = "1.0.0"
-displayName = "Cobblemon Extras Forge Sidemod"
+version = "${version}"
+displayName = "Very Scuffed Cobblemon Breeding"
 description = '''
 
 '''

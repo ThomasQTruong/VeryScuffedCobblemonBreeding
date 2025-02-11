@@ -15,12 +15,6 @@ archivesBaseName = rootProject.archives_base_name + "-neoforge"
 loom {
     silentMojangMappingsLicense()
     enableTransitiveAccessWideners = true
-    //accessWidenerPath = project(":common").loom.accessWidenerPath
-//
-    //forge {
-    //    convertAccessWideners = true
-    //    extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-    //}
 }
 
 configurations {
@@ -41,7 +35,6 @@ configurations {
 }
 
 dependencies {
-
     minecraft("com.mojang:minecraft:${rootProject.minecraft_version}")
     // The following line declares the mojmap mappings, you may use other mappings as well
     mappings(loom.officialMojangMappings())
@@ -63,10 +56,10 @@ dependencies {
 }
 
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", rootProject.version
 
     filesMatching('META-INF/neoforge.mods.toml') {
-        expand "version": project.version
+        expand "version": rootProject.version
     }
 }
 
@@ -91,6 +84,8 @@ remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier = null
+    archiveVersion.set("${rootProject.version}+${rootProject.property("minecraft_version")}")
+    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
 }
 
 jar {
